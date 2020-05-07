@@ -1,0 +1,258 @@
+﻿@model FoodDelivery.Models.UserProfileVM
+@{
+    ViewBag.Title = "Profile";
+    Layout = "_Layout";
+}
+
+<!-- Content Row -->
+<div class="row">
+    <!-- Content Column -->
+    <div class="col-lg-12 mb-4">
+        <!-- Project Card Example -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Profile</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="row">
+                            <div class="avatar-upload m-0 m-auto">
+                                <label class="ml-5"><span class="fa fa-pencil">Profile Pic</span> </label>
+                                <div class="avatar-edit">
+                                    <input type='file' id="imageUploadTec" accept=".png, .jpg, .jpeg" />
+                                    <label for="imageUploadTec"><span class="fa fa-pencil"></span> </label>
+                                </div>
+                                <div class="avatar-preview">
+
+                                    @if (!string.IsNullOrEmpty(Model.ProfilePic))
+                                    {
+                                        <img id="imagePreviewTec" style="border-radius:100px" height="200" width="200" src="~/UploadedFiles/@Model.ProfilePic" />
+                                        @*<div id="imagePreviewTec" style="background-image: url(C:\Users\user\Desktop\New Fiver Project\FoodDelivery\FoodDelivery/wwwroot/UploadedFiles\2020-04-05_1552.png)">
+                                        </div>*@
+                                    }
+                                    else
+                                    {
+                                        <div id="imagePreviewTec" style="background-image: url(https://img.pngio.com/avatar-user-computer-icons-software-developer-avatar-png-png-computer-user-900_540.jpg);">
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-5 mb-4">
+                            <div class="avatar-upload m-0 m-auto">
+                                <label class="ml-5"><span class="fa fa-pencil">Driver Car</span> </label>
+                                <div class="avatar-edit">
+                                    <input type='file' id="imageUploadTecCar" accept=".png, .jpg, .jpeg" />
+                                    <label for="imageUploadTecCar"><span class="fa fa-pencil"></span> </label>
+                                </div>
+                                <div class="avatar-preview">
+
+                                    @if (!string.IsNullOrEmpty(Model.CarPic))
+                                    {
+                                         <img id="imagePreviewTec1" style="border-radius:100px" height="200" width="200" src="~/UploadedFiles/@Model.CarPic" />
+                                    }
+                                    else
+                                    {
+                                        <div id="imagePreviewTec1" style="background-image: url(https://img.pngio.com/avatar-user-computer-icons-software-developer-avatar-png-png-computer-user-900_540.jpg);">
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+
+                    <div class="col-md-8">
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="General-tab" data-toggle="tab" href="#General" role="tab" aria-controls="home" aria-selected="true">General</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" id="Password-tab" data-toggle="tab" href="#Password" role="tab" aria-controls="contact" aria-selected="false">Password</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="v-pills-tabContent">
+                            <div class="tab-pane fade show active" id="General" role="tabpanel" aria-labelledby="v-pills-home-tab">
+                                @using (Html.BeginForm("UpdatePassword", "Home", FormMethod.Post, new { @class = "user", autocomplete = "off", id = "FormCreate1" }))
+                                {
+                                    <div class="form-group">
+                                        <label>First Name</label>
+                                        @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control ", placeholder = "Enter First Name", type = "text", @readonly = "readonly" } })
+                                        @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Last Name</label>
+                                        @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control ", placeholder = "Enter Last Name", type = "text", @readonly = "readonly" } })
+                                        @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+                                    </div>
+                                    if (User.IsInRole("Teacher"))
+                                    {
+
+                                    }
+
+                                    <div class="form-group">
+                                        <label>Phone Number</label>
+                                        @Html.EditorFor(model => model.PhoneNumber, new { htmlAttributes = new { @class = "form-control ", placeholder = "Phone", type = "text", @readonly = "readonly" } })
+                                        @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Email address</label>
+                                        @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control ", placeholder = "Email", type = "text", @readonly = "readonly" } })
+                                        @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="tab-pane fade" id="Password" role="tabpanel" aria-labelledby="v-pills-messages-tab">
+                                @using (Html.BeginForm("UpdatePassword", "Home", FormMethod.Post, new { @class = "user", autocomplete = "off", id = "FormCreate2" }))
+                                {
+                                    <div class="form-group">
+                                        <label>Current Password</label>
+                                        @Html.EditorFor(model => model.NewPassword, new { htmlAttributes = new { @class = "form-control ", placeholder = "Current Password", type = "password" } })
+                                        @Html.ValidationMessageFor(model => model.NewPassword, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label>New Password</label>
+                                        @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control ", placeholder = "password", type = "password" } })
+                                        @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Confirm Password</label>
+                                        @Html.EditorFor(model => model.ConfirmPassword, new { htmlAttributes = new { @class = "form-control ", placeholder = "Confirm Password", type = "password" } })
+                                        @Html.ValidationMessageFor(model => model.ConfirmPassword, "", new { @class = "text-danger" })
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Color System -->
+
+
+    </div>
+
+
+</div>
+
+
+@section Scripts{
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.4.0/bootbox.min.js"></script>
+    <script>
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#imagePreview').css('background-image', 'url(' + e.target.result + ')');
+                    $('#imagePreview').hide();
+                    $('#imagePreview').fadeIn(650);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        $("#imageUpload").change(function () {
+            readURL(this);
+        });
+
+        $(function () {
+            $("#FormCreate2").on("submit", function (e) {
+                debugger
+                e.preventDefault();
+                var frm = $(this);
+                $.ajax({
+                    url: frm.attr('action'),
+                    type: frm.attr('method'),
+                    data: frm.serialize(),
+                    success: function (response) {
+                        if (response.status == true) {
+                            bootbox.alert({ message: response.message, size: 'small' });
+                              //window.location.href = "/Account/SignOut";
+                        } else {
+                            bootbox.alert({ message: response.message, size: 'small' });
+                        }
+                    },
+                    error: function () {
+
+                    }
+                });
+            });
+        });
+
+        //Picture Upload code
+        var reader = new FileReader();
+        var imgdata = new FormData();
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                reader.onload = function (e) {
+                    $('#imagePreviewTec').css('background-image', 'url(' + e.target.result + ')');
+                    $('#imagePreviewTec').hide();
+                    $('#imagePreviewTec').fadeIn(650);
+                }
+                reader.readAsDataURL(input.files[0]);
+                imgdata.append("File", input.files[0]);
+                $.ajax({
+                    type: "POST",
+                    url: '/Home/Upload',
+                    data: imgdata,
+                    dataType: 'json',
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        window.location.reload();
+                    },
+                    error: function (error) {
+                        //alert("errror");
+                    }
+                });
+            }
+        }
+
+        $("#imageUploadTec").change(function () {
+            readURL(this);
+        });
+
+
+        //Uploads Car Pic
+        function readURLCar(input) {
+            if (input.files && input.files[0]) {
+                reader.onload = function (e) {
+                    $('#imagePreviewTec1').css('background-image', 'url(' + e.target.result + ')');
+                    $('#imagePreviewTec1').hide();
+                    $('#imagePreviewTec1').fadeIn(650);
+                }
+                reader.readAsDataURL(input.files[0]);
+                imgdata.append("File", input.files[0]);
+                $.ajax({
+                    type: "POST",
+                    url: '/Home/UploadCarPic',
+                    data: imgdata,
+                    dataType: 'json',
+                    contentType: false,
+                    processData: false,
+                    success: function (response) {
+                        window.location.reload();
+                    },
+                    error: function (error) {
+                        //alert("errror");
+                    }
+                });
+            }
+        }
+
+        $("#imageUploadTecCar").change(function () {
+            readURLCar(this);
+        });
+
+    </script>
+}
+
