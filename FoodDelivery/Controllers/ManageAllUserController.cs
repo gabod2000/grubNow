@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using DataAccessLayer;
 using DataAccessLayer.InterfacesRepository;
 using FoodDelivery.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Models;
 
@@ -15,10 +18,12 @@ namespace FoodDelivery.Controllers
     {
         private readonly UserManager<AppUser> _userManger;
         private IListOfAllData _listOfAll;
-        public ManageAllUserController(UserManager<AppUser> userManager,IListOfAllData listOfAll)
+        private IEfRepository _efRepository;
+        public ManageAllUserController(UserManager<AppUser> userManager,IListOfAllData listOfAll,IEfRepository efRepository)
         {
             _userManger = userManager;
             _listOfAll = listOfAll;
+            _efRepository = efRepository;
         }
         public IActionResult Index()
         {
@@ -33,21 +38,121 @@ namespace FoodDelivery.Controllers
                     if (_userManger.IsInRoleAsync(item, "Vendor").Result)
                     {
 
-                        var VendorData = _listOfAll.GetVendorById(item.Id);
-                        SignUpVendorVM listVM = new SignUpVendorVM();
-                        listVM.Id = item.Id;
-                        listVM.FirstName = item.FirstName;
-                        listVM.LastName = item.LastName;
-                        listVM.Email = item.Email;
-                        listVM.PhoneNumber = item.PhoneNumber;
-                        listVM.StoreName = VendorData.StoreName;
-                        listVM.Address = VendorData.Address_Location;
-                        model.Add(listVM);
+                        var VendorData = _listOfAll.GetVendorByUserId(item.Id);
+                        if (VendorData!=null)
+                        {
+                            SignUpVendorVM listVM = new SignUpVendorVM();
+                            listVM.Id = item.Id;
+                            listVM.FirstName = item.FirstName;
+                            listVM.LastName = item.LastName;
+                            listVM.Email = item.Email;
+                            listVM.PhoneNumber = item.PhoneNumber;
+                            listVM.StoreName = VendorData.StoreName;
+                            listVM.Address = VendorData.Address_Location;
+                            listVM.VendorId = VendorData.Id;
+                            model.Add(listVM);
+                        }
+                        
                     }
                 }
             }
 
             return View(model);
+        }
+
+
+        [HttpGet]
+        public IActionResult SignUp(string UserType)
+        {
+            if (UserType == "Vendor")
+            {
+                SignUpVendorVM model = new SignUpVendorVM();
+                model.Area = _listOfAll.GetArea()?.Select(p => new SelectListItem()
+                {
+                    Text = p.AreaName,
+                    Value = p.Id.ToString()
+                }).ToList();
+                model.Category = _listOfAll.GetCategory()?.Select(p => new SelectListItem()
+                {
+                    Text = p.Name,
+                    Value = p.Id.ToString()
+                }).ToList();
+                model.Cuisine = _listOfAll.GetCuisine()?.Select(p => new SelectListItem()
+                {
+                    Text = p.Name,
+                    Value = p.Id.ToString()
+                }).ToList();
+
+                model.NunberOfLocation = new List<SelectListItem>()
+                {
+                    new SelectListItem() { Value = "1 - 4", Text = "1 - 4" },
+                    new SelectListItem() { Value = "4 - 10", Text = "4 - 10" },
+                    new SelectListItem() { Value = "10 - 20", Text = "10 - 20" }
+                };
+
+
+                return PartialView("_VendorSignUp", model);
+            }
+            else if (UserType == "User")
+            {
+                return PartialView("_User_SigUp");
+            }
+            else
+            {
+                SignUpDriverVM model = new SignUpDriverVM();
+                model.Area = _listOfAll.GetArea()?.Select(p => new SelectListItem()
+                {
+                    Text = p.AreaName,
+                    Value = p.Id.ToString()
+                }).ToList();
+                return PartialView("_Driver_SigUp", model);
+            }
+
+        }
+
+
+
+
+
+        [HttpGet]
+        public IActionResult EditVendor(string UserId)
+        {
+            return View();
+        }
+
+
+        [HttpPost]
+        public IActionResult EditVendor(SignUpVendorVM model)
+        {
+            return View();
+        }
+
+
+
+        [HttpGet]
+        public IActionResult EditDriver(string UserId)
+        {
+            return View();
+        }
+
+
+        [HttpPost]
+        public IActionResult EditDriver(SignUpDriverVM model)
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult EditUser(string UserId)
+        {
+            return View();
+        }
+
+
+        [HttpPost]
+        public IActionResult EditUser(SignUpUserVM model)
+        {
+            return View();
         }
 
 
@@ -64,7 +169,7 @@ namespace FoodDelivery.Controllers
                     if (_userManger.IsInRoleAsync(item, "Vendor").Result)
                     {
 
-                        var VendorData = _listOfAll.GetVendorById(item.Id);
+                        var VendorData = _listOfAll.GetVendorByUserId(item.Id);
                         SignUpVendorVM listVM = new SignUpVendorVM();
                         listVM.Id = item.Id;
                         listVM.FirstName = item.FirstName;
@@ -93,15 +198,19 @@ namespace FoodDelivery.Controllers
                 {
                     if (_userManger.IsInRoleAsync(item, "Driver").Result)
                     {
-                        var driverData = _listOfAll.GetDriverById(item.Id);
-                        SignUpDriverVM listVM = new SignUpDriverVM();
-                        listVM.Id = item.Id;
-                        listVM.FirstName = item.FirstName;
-                        listVM.LastName = item.LastName;
-                        listVM.Email = item.Email;
-                        listVM.PhoneNumber = item.PhoneNumber;
-                        listVM.Address = driverData.Address_Location;
-                        model.Add(listVM);
+                        var driverData = _listOfAll.GetDriverByUserId(item.Id);
+                        if (driverData!=null)
+                        {
+                            SignUpDriverVM listVM = new SignUpDriverVM();
+                            listVM.Id = item.Id;
+                            listVM.FirstName = item.FirstName;
+                            listVM.LastName = item.LastName;
+                            listVM.Email = item.Email;
+                            listVM.PhoneNumber = item.PhoneNumber;
+                            listVM.Address = driverData.Address_Location;
+                            model.Add(listVM);
+                        }
+                       
                     }
                  
                 }
@@ -121,7 +230,7 @@ namespace FoodDelivery.Controllers
                 {
                     if (_userManger.IsInRoleAsync(item, "Driver").Result)
                     {
-                        var driverData = _listOfAll.GetDriverById(item.Id);
+                        var driverData = _listOfAll.GetDriverByUserId(item.Id);
                         SignUpDriverVM listVM = new SignUpDriverVM();
                         listVM.Id = item.Id;
                         listVM.FirstName = item.FirstName;
@@ -164,6 +273,189 @@ namespace FoodDelivery.Controllers
 
             return View(model);
         }
+
+
+
+        // POST: Vendor/Delete/5
+        [HttpPost]
+        public IActionResult DeleteVendor(string id)
+        {
+            bool Status = false;
+            string Message = string.Empty;
+
+
+            // Finde vendor 
+            var Vendor = _listOfAll.GetVendorByUserId(id);
+
+            //Vendor With Area
+            var VendorWithArea = _listOfAll.GetsVendorWithAreaById(Vendor.Id);
+            foreach (var item in VendorWithArea)
+            {
+                //Delete Driver 
+                _efRepository.Delete(item);
+            }
+
+            //Vendor With Cusine
+            var VendorWithCusine = _listOfAll.GetsVendorWithCusineById(Vendor.Id);
+            foreach (var item in VendorWithCusine)
+            {
+                //Delete Driver 
+                _efRepository.Delete(item);
+            }
+
+            //Check Vendor Other Location
+            var VendorOtherLocation = _listOfAll.GetOtherLocationByVendorID(Vendor.Id);
+            foreach (var item in VendorOtherLocation)
+            {
+                //Delete Other Location 
+                _efRepository.Delete(item);
+            }
+
+
+            //Delete Driver 
+            _efRepository.Delete(Vendor);
+
+            _efRepository.SaveChanges();
+
+            var user = _userManger.FindByIdAsync(id).Result;
+            var result =  _userManger.DeleteAsync(user).Result;
+            if (result.Succeeded)
+            {
+                Status = true;
+                Message = "Record Successfully Deleted.";
+
+            }
+            else
+            {
+                Status = false;
+                Message = "Error While Deleted Record.";
+            }
+            return Json(new { status = Status, message = Message });
+        }
+
+
+        // POST: Vendor/Delete/5
+        [HttpPost]
+        public IActionResult DeleteDriver(string id)
+        {
+            bool Status = false;
+            string Message = string.Empty;
+
+
+            // Finde vendor 
+            var Driver = _listOfAll.GetDriverByUserId(id);
+
+            //Vendor With Area
+            var DriverWithArea = _listOfAll.GetsDriverWithAreaById(Driver.Id);
+            foreach (var item in DriverWithArea)
+            {
+                //Delete Driver 
+                _efRepository.Delete(item);
+            }
+
+            //Delete Driver 
+            _efRepository.Delete(Driver);
+
+            _efRepository.SaveChanges();
+
+            var user = _userManger.FindByIdAsync(id).Result;
+            var result = _userManger.DeleteAsync(user).Result;
+            if (result.Succeeded)
+            {
+                Status = true;
+                Message = "Record Successfully Deleted.";
+
+            }
+            else
+            {
+                Status = false;
+                Message = "Error While Deleted Record.";
+            }
+            return Json(new { status = Status, message = Message });
+        }
+
+
+        // POST: User/Delete/5
+        [HttpPost]
+        public IActionResult DeleteUser(string id)
+        {
+            bool Status = false;
+            string Message = string.Empty;
+            var user = _userManger.FindByIdAsync(id).Result;
+            var result = _userManger.DeleteAsync(user).Result;
+            if (result.Succeeded)
+            {
+                Status = true;
+                Message = "Record Successfully Deleted.";
+
+            }
+            else
+            {
+                Status = false;
+                Message = "Error While Deleted Record.";
+            }
+            return Json(new { status = Status, message = Message });
+        }
+
+        [HttpGet]
+        public IActionResult Addlocation(int VendorId)
+        {
+            var otherLocaction = new OtherLocationVM();
+            var getOtherLocationByVendorID = _listOfAll.GetOtherLocationByVendorID(VendorId).ToList();
+            if (getOtherLocationByVendorID!=null)
+            {
+                otherLocaction.VendorID = VendorId;
+            }
+            return View(otherLocaction);
+        }
+
+        [HttpPost]
+        public IActionResult Addlocation(OtherLocationVM Model)
+        {
+            string Message = string.Empty;
+            bool Status = false;
+            if (ModelState.IsValid)
+            {
+               
+                OtherLocation obj = new OtherLocation();
+                obj.VendorID = Model.VendorID;
+                obj.LocationAddress = Model.LocationAddress;
+                obj.LocationName = Model.LocationName;
+                _efRepository.Add(obj);
+                var result = _efRepository.SaveChanges();
+                if (result)
+                {
+                    Status = true;
+                    Message = "Record Successfully Created.";
+                }
+                else
+                {
+                    Status = false;
+                    Message = "Error While Creating Record.";
+                }
+            }
+            return Json(new { status = Status, message = Message });
+        }
+
+
+        [HttpGet]
+        public IActionResult ListOfLocation(int VendorId)
+        {
+            List<OtherLocationList> otherLocaction = new List<OtherLocationList>();
+            var getOtherLocationByVendorID = _listOfAll.GetOtherLocationByVendorID(VendorId).ToList();
+            foreach (var item in getOtherLocationByVendorID)
+            {
+                otherLocaction.Add(new OtherLocationList()
+                {
+                    LocationAddress = item.LocationAddress,
+                    LocationName = item.LocationName
+                });
+
+            }
+            return View(otherLocaction);
+        }
+
+        
 
     }
 }

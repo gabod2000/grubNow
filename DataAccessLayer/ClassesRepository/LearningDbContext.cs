@@ -26,8 +26,11 @@ namespace DataAccessLayer
         public DbSet<Cuisine> Cuisines { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Driver> Drivers { get; set; }
+        public DbSet<OtherLocation> OtherLocations { get; set;}
         public DbSet<DriverWithArea> DriverWithAreas { get; set; }
         public DbSet<Blogs> Blogs { get; set; }
+        public DbSet<VendorWithArea> VendorWithAreas { get; set; }
+        public DbSet<VendorWithCuisine> VendorWithCuisines { get; set; }
         public DbSet<Area> Areas { get; set; }
 
         //override this Methods to use sql server and provide Connection Strings

@@ -1,0 +1,62 @@
+﻿@model OtherLocationVM
+@{
+    ViewData["Title"] = "List";
+    Layout = null;
+}
+<div class="container mt-3 mb-4">
+    <div class="col-12">
+        <div class="">
+            <h3 class="text-center mb-5">Add New Vendor Location</h3>
+            <form asp-controller="ManageAllUser" asp-action="Addlocation" method="post" id="FormCreate">
+                @Html.HiddenFor(x => x.VendorID)
+                <div class="form-row ">
+                    <div class="col">
+                        <label>First Name</label>
+                        <input type="text" asp-for="LocationName" class="form-control" placeholder="Location Name">
+                        <span asp-validation-for="LocationName" class="text-danger small text-uppercase"></span>
+                    </div>
+                    <div class="col">
+                        <label>Last Name</label>
+                        <input type="text" asp-for="LocationAddress" class="form-control" placeholder="Location Address">
+                        <span asp-validation-for="LocationAddress" class="text-danger small text-uppercase"></span>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-12">
+
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.4.0/bootbox.min.js"></script>
+<script>
+    $("#FormCreate").on("submit", function (e) {
+        e.preventDefault();
+        var frm = $(this);
+        $.ajax({
+            url: frm.attr('action'),
+            type: frm.attr('method'),
+            data: frm.serialize(),
+            success: function (response) {
+                if (response.status == true) {
+                    bootbox.alert({ message: response.message, size: 'small' });
+
+                } else {
+                     bootbox.alert({ message: response.message, size: 'small' });
+                }
+            },
+            error: function () {
+
+            }
+        });
+
+    });
+</script>

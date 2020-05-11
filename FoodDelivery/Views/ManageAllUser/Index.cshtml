@@ -11,10 +11,10 @@
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-header">
-                            All Vendor
+                            All Vendor   <a class="float-right btn btn-primary flri" href="#" title="Create" id="CreateVendor"><i class="fas fa-book"></i> Create</a>
                         </div>
                         <div class="card-body">
-                            <table class="table ExSTable ExSDataTable" id="UserTab">
+                            <table class="table ExSTable ExSDataTable" id="TabVendor">
                                 <thead class="thead-dark">
                                     <tr>
                                         <th scope="col">#</th>
@@ -24,6 +24,8 @@
                                         <th scope="col">Phone Number</th>
                                         <th scope="col">Store Name</th>
                                         <th scope="col">Address</th>
+                                        <th scope="col">Other Location</th>
+                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -37,7 +39,16 @@
                                             <td>@item.PhoneNumber</td>
                                             <td>@item.StoreName</td>
                                             <td>@item.Address</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-info " id="js-AddLocation" title="Add New Other Location" data-id="@item.VendorId"><i class="fas fa-book"></i> </button>
+                                                <button class="btn btn-sm btn-info " id="js-VendorLocation" title="Vendor other Location Details" data-id="@item.VendorId"><i class="fas fa-file"></i> </button>
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-info "    title="Edit"   id=" js-Update"   data-id="@item.Id"><i class="fas fa-pen"></i> </button>
+                                                <button class="btn btn-sm btn-danger " id="js-delete" title="Delete" href="/ManageAllUser/DeleteVendor/@item.Id" ><i class="fas fa-trash-alt"></i> </button>
+                                            </td>
                                         </tr>
+
                                         counter++;
                                     }
                                 </tbody>

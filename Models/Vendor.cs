@@ -1,5 +1,6 @@
 ﻿
 
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Models
@@ -13,14 +14,14 @@ namespace Models
         public string Website_Url { get; set; }
         public string NumberOfLocation { get; set; }
         public string Address_Location { get; set; }
-        public int? AreaId { get; set; }
-        public virtual Area Area { get; set; }
-        public int? CuisineId { get; set; }
-        public virtual Cuisine Cuisine { get; set; }
+
+        public virtual IList<VendorWithArea> VendorWithAreas { get; set; }
+        public virtual IList<VendorWithCuisine> VendorWithCuisines { get; set; }
         public string UserId { get; set; }
 
         [ForeignKey("UserId")]
         public virtual AppUser User { get; set; }
+        public string UniqueFileName { get; set; }
 
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -7,6 +8,8 @@ using System.Threading.Tasks;
 using DataAccessLayer;
 using DataAccessLayer.InterfacesRepository;
 using FoodDelivery.Models;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -23,14 +26,16 @@ namespace FoodDelivery.Controllers
         private readonly UserManager<AppUser> _userManger;
         private IEfRepository _efRepository;
         private IListOfAllData _listOfAll;
+        private IHostingEnvironment Environment;
         public AccountController(UserManager<AppUser> userManager,
-            SignInManager<AppUser> signInManager, RoleManager<AppRole> roleManager, IEfRepository efRepository, IListOfAllData listOfAll)
+            SignInManager<AppUser> signInManager, RoleManager<AppRole> roleManager, IEfRepository efRepository, IListOfAllData listOfAll, IHostingEnvironment environment)
         {
             _userManger = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
             _listOfAll = listOfAll;
             _efRepository = efRepository;
+            Environment = environment;
         }
 
         #region SignIn
@@ -128,7 +133,7 @@ namespace FoodDelivery.Controllers
                 throw;
             }
 
-           
+
         }
         #endregion
 
@@ -184,13 +189,21 @@ namespace FoodDelivery.Controllers
 
         #region VendorSignUp
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult SignUpVendor(SignUpVendorVM model)
+        public IActionResult SignUpVendor(SignUpVendorVM model, string AreaIDs,string CusineIds,IFormFile upload)
         {
             bool Status = false;
             string Message = string.Empty;
+            //List Of AreaIds
+            List<string> ListOfArea = JsonConvert.DeserializeObject<List<string>>(AreaIDs);
+
+            //List Of CusineIds
+            List<string> ListOfCusineIds = JsonConvert.DeserializeObject<List<string>>(CusineIds);
+
             if (ModelState.IsValid)
             {
+
+                #region Check User Exist 
+
                 // User Name Already Exsit
                 var userName = _userManger.FindByNameAsync(model.Email).Result;
                 if (userName != null)
@@ -209,6 +222,26 @@ namespace FoodDelivery.Controllers
                     return Json(new { status = Status, message = Message });
                 }
 
+
+                #endregion
+
+                #region Create File Path 
+
+                string contentPath = this.Environment.ContentRootPath;
+                string path = Path.Combine(contentPath, "Uploads");
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+                string UniqueFileName = "";
+                string fileName = Path.GetFileName(upload.FileName);
+                UniqueFileName = Guid.NewGuid() + "_" + fileName;
+
+                #endregion
+
+
+
+
                 // User
                 var user = new AppUser();
                 user.FirstName = model.FirstName;
@@ -222,18 +255,200 @@ namespace FoodDelivery.Controllers
                 var result = _userManger.CreateAsync(user, model.Password).Result;
                 if (result.Succeeded)
                 {
+
+                    using (FileStream stream = new FileStream(Path.Combine(path, UniqueFileName), FileMode.Create))
+                    {
+                        UniqueFileName = Guid.NewGuid() + "_" + fileName;
+                        upload.CopyTo(stream);
+                       // ViewBag.Message += string.Format("<b>{0}</b> uploaded.<br />", fileName);
+                    }
+
+
+
+
                     //Adding Vendor Information 
                     Vendor vendor = new Vendor();
-                    vendor.CategoryId = model.CategoryId;
-                    vendor.CuisineId = model.CuisineId;
+
+                    #region Add other Category 
+                    Category category = new Category();
+                    if (model.OtherCatregory != null)
+                    {
+
+                        //Check If Other Area Already Exist 
+                        if (!_listOfAll.CheckAlreadyExistCategory(model.OtherCatregory))
+                        {
+                            // Save Other Area
+                            category.Name = model.OtherCatregory;
+                            _efRepository.Add(category);
+                            //Adding Cusine With vendor 
+                            if (_efRepository.SaveChanges())
+                            {
+                                vendor.CategoryId = category.Id;
+                            }
+
+                        }
+                        else
+                        {
+                            Status = false;
+                            Message = "Other Category Already Exist Please Use an Other One ";
+
+                            //Delete User
+                            var userdelete = _userManger.DeleteAsync(user).Result;
+                            if (userdelete.Succeeded)
+                            {
+                                return Json(new { status = Status, message = Message });
+                            }
+                        }
+                    }
+                    #endregion
+
+                    if (model.OtherCatregory == null)
+                    {
+                        vendor.CategoryId = model.CategoryId;
+                    }
                     vendor.NumberOfLocation = model.NunberOfLocationName;
                     vendor.StoreName = model.StoreName;
                     vendor.Website_Url = model.Website_Url;
+                    vendor.UniqueFileName = UniqueFileName;
                     vendor.UserId = user.Id;
                     vendor.Address_Location = model.Address;
-                    vendor.AreaId = model.AreaId;
                     _efRepository.Add(vendor);
                     _efRepository.SaveChanges();
+
+                    #region Adding Other Area 
+
+                    Area area = null;
+                    if (model.OtherArea != null)
+                    {
+                         area= new Area();
+                        //Check If Other Area Already Exist 
+                        if (!_listOfAll.CheckAlreadyExistArea(model.OtherArea))
+                        {
+                            // Save Other Area
+                            area.AreaName = model.OtherArea;
+                            _efRepository.Add(area);
+                            VendorWithArea driverWithArea = null;
+                            if (_efRepository.SaveChanges())
+                            {
+                                driverWithArea = new VendorWithArea();
+                                driverWithArea.AreaId = area.Id;
+                                driverWithArea.VendorId = vendor.Id;
+                                _efRepository.Add(driverWithArea);
+                                var resul = _efRepository.SaveChanges();
+                            }
+
+                        }
+                        else
+                        {
+                            Status = false;
+                            Message = "Other Area Already Exist Please Use an Other One ";
+
+                            //Delete User
+                            var userDelete= _userManger.DeleteAsync(user).Result;
+                            if (userDelete.Succeeded)
+                            {
+                                //Delete Driver 
+                                _efRepository.Delete(vendor);
+
+                                _efRepository.SaveChanges();
+                            }
+                            return Json(new { status = Status, message = Message });
+                        }
+
+
+
+                    }
+
+                    #endregion
+
+                    #region Adding Other Cusine 
+                    Cuisine cuisine = new Cuisine();
+                    if (model.OtherCusine != null)
+                    {
+
+                        //Check If Other Area Already Exist 
+                        if (!_listOfAll.CheckAlreadyExistCusine(model.OtherCusine))
+                        {
+                            // Save Other Area
+                            cuisine.Name = model.OtherCusine;
+                            _efRepository.Add(cuisine);
+                            VendorWithCuisine vendorwithCusine = null;
+
+                            //Adding Cusine With vendor 
+                            if (_efRepository.SaveChanges())
+                            {
+                                vendorwithCusine = new VendorWithCuisine();
+                                vendorwithCusine.CuisineId = cuisine.Id;
+                                vendorwithCusine.VendorId = vendor.Id;
+                                _efRepository.Add(vendorwithCusine);
+                                var resul = _efRepository.SaveChanges();
+                            }
+
+                        }
+                        else
+                        {
+                            Status = false;
+                            Message = "Other Cusine Already Exist Please Use an Other One ";
+
+                            //Delete User
+                            var userdelete =  _userManger.DeleteAsync(user).Result;
+                            if (userdelete.Succeeded)
+                            {
+                                //Delete Area
+                                if (area!=null)
+                                {
+                                    _efRepository.Delete(area);
+                                    //Delete Vendor With Area 
+                                    var vendorarea = _listOfAll.GetVendorWithAreaById(area.Id);
+                                    _efRepository.Delete(vendorarea);
+                                }
+
+                                //Delete Driver 
+                                _efRepository.Delete(vendor);
+
+                                _efRepository.SaveChanges();
+                            }
+                            return Json(new { status = Status, message = Message });
+                        }
+                    }
+                    #endregion
+
+
+
+
+                    #region Adding List Of Area and Cusine 
+                    // Save Multipale Area
+                    if (ListOfArea.Count() > 0)
+                    {
+                        foreach (var item in ListOfArea)
+                        {
+                            VendorWithArea driverWithArea = new VendorWithArea();
+                            driverWithArea.AreaId = Convert.ToInt32(item);
+                            driverWithArea.VendorId = vendor.Id;
+                            _efRepository.Add(driverWithArea);
+                            var resul = _efRepository.SaveChanges();
+                        }
+                    }
+
+                    // Save Multipale Cusine 
+                    if (ListOfCusineIds.Count() > 0)
+                    {
+                        foreach (var item in ListOfCusineIds)
+                        {
+                            VendorWithCuisine cusineWithArea = new VendorWithCuisine();
+                            cusineWithArea.CuisineId = Convert.ToInt32(item);
+                            cusineWithArea.VendorId = vendor.Id;
+                            _efRepository.Add(cusineWithArea);
+                            var resul = _efRepository.SaveChanges();
+                        }
+                    }
+
+
+
+
+
+
+                    #endregion
 
                     //Add Role
                     AddRole("Vendor", user);
@@ -378,13 +593,15 @@ namespace FoodDelivery.Controllers
         }
 
         [HttpPost]
-       // [ValidateAntiForgeryToken]
+        // [ValidateAntiForgeryToken]
         public IActionResult SignUpDriver(SignUpDriverVM model, string AreaIDs)
         {
             bool Status = false;
             string Message = string.Empty;
-            //List Of Customer/Provider
-            List<string> entityaccount = JsonConvert.DeserializeObject<List<string>>(AreaIDs);
+
+            //List Of AreaIds
+            List<string> ListOfArea = JsonConvert.DeserializeObject<List<string>>(AreaIDs);
+
             if (ModelState.IsValid)
             {
                 // User Name Already Exsit
@@ -430,25 +647,46 @@ namespace FoodDelivery.Controllers
                     _efRepository.SaveChanges();
 
                     Area area = new Area();
-                    if (model.OtherArea!=null)
+                    if (model.OtherArea != null)
                     {
-                        // Save Other Area
-                        area.AreaName = model.OtherArea;
-                        _efRepository.Add(area);
-                        if (_efRepository.SaveChanges())
+
+                        //Check If Other Area Already Exist 
+                        if (!_listOfAll.CheckAlreadyExistArea(model.OtherArea))
                         {
-                            DriverWithArea driverWithArea = new DriverWithArea();
-                            driverWithArea.AreaId = area.Id;
-                            driverWithArea.DriverId = driver.Id;
-                            _efRepository.Add(driverWithArea);
-                            var resul = _efRepository.SaveChanges();
+                            // Save Other Area
+                            area.AreaName = model.OtherArea;
+                            _efRepository.Add(area);
+                            if (_efRepository.SaveChanges())
+                            {
+                                DriverWithArea driverWithArea = new DriverWithArea();
+                                driverWithArea.AreaId = area.Id;
+                                driverWithArea.DriverId = driver.Id;
+                                _efRepository.Add(driverWithArea);
+                                var resul = _efRepository.SaveChanges();
+                            }
+
+                        }
+                        else
+                        {
+                            Status = false;
+                            Message = "Other Area Already Exist Please Use an Other One ";
+
+                            //Delete User
+                            var date = _userManger.DeleteAsync(user).Result;
+                            if (date.Succeeded)
+                            {
+                                //Delete Driver 
+                                _efRepository.Delete(driver);
+                                _efRepository.SaveChanges();
+                            }
+                            return Json(new { status = Status, message = Message });
                         }
                     }
 
                     // Save Multipale Area
-                    if (entityaccount.Count()>0)
+                    if (ListOfArea.Count() > 0)
                     {
-                        foreach (var item in entityaccount)
+                        foreach (var item in ListOfArea)
                         {
                             DriverWithArea driverWithArea = new DriverWithArea();
                             driverWithArea.AreaId = Convert.ToInt32(item);
@@ -457,7 +695,7 @@ namespace FoodDelivery.Controllers
                             var resul = _efRepository.SaveChanges();
                         }
                     }
-                    
+
 
 
                     //Add Role

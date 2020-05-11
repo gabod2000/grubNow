@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -68,7 +69,7 @@ namespace FoodDelivery.Models
 
         [Display(Name = "Confirm Password")]
         [Required(ErrorMessage = "{0} is required")]
-        [StringLength(50, ErrorMessage = "{0} must be from {2} - {1} characters", MinimumLength = 6)]
+        [StringLength(50, ErrorMessage = "Minimum Password Length is 6", MinimumLength = 6)]
         [Compare("Password", ErrorMessage = "Password does not match")]
         public string ConfirmPassword { get; set; }
 
@@ -79,7 +80,12 @@ namespace FoodDelivery.Models
 
         [Display(Name = "Address")]
         [Required(ErrorMessage = "{0} is required")]
-        [StringLength(100, ErrorMessage = "{0} must be from {2} - {1} characters", MinimumLength = 3)]
+        [StringLength(100, ErrorMessage = "Minimum Password Length is 6", MinimumLength = 3)]
         public string Address { get; set; }
+        public IFormFile SubmitterPicture { get; set; }
+        public string OtherArea { get; set; }
+        public string OtherCatregory { get; set; }
+        public string OtherCusine { get; set; }
+        public int VendorId { get; set; }
     }
 }

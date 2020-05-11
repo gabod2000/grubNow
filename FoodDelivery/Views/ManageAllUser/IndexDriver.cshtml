@@ -12,10 +12,10 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                All Driver
+                                All Driver  <a class="float-right btn btn-primary flri" href="#" title="Create" id="CreateDriver"><i class="fas fa-book"></i> Create</a>
                             </div>
                             <div class="card-body">
-                                <table class="table ExSTable ExSDataTable" id="UserTab">
+                                <table class="table ExSTable ExSDataTable" id="TabDriver">
                                     <thead class="thead-dark">
                                         <tr>
                                             <th scope="col">#</th>
@@ -24,19 +24,24 @@
                                             <th scope="col">Email</th>
                                             <th scope="col">Phone Number</th>
                                             <th scope="col">Address</th>
+                                            <th>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach (var item in Model)
                                         {
-                                            <tr>
-                                                <th scope="row">@counter</th>
-                                                <td>@item.FirstName</td>
-                                                <td>@item.LastName</td>
-                                                <td>@item.Email</td>
-                                                <td>@item.PhoneNumber</td>
-                                                <td>@item.Address</td>
-                                            </tr>
+                                        <tr>
+                                            <th scope="row">@counter</th>
+                                            <td>@item.FirstName</td>
+                                            <td>@item.LastName</td>
+                                            <td>@item.Email</td>
+                                            <td>@item.PhoneNumber</td>
+                                            <td>@item.Address</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-info "  title="Edit"    id="js-Update"  data-id="@item.Id"><i class="fas fa-pen"></i> </button>
+                                                <button class="btn btn-sm btn-danger " id="js-delete" title="Delete" href="/ManageAllUser/DeleteDriver/@item.Id" ><i class="fas fa-trash-alt"></i> </button>
+                                            </td>
+                                        </tr>
                                             counter++;
                                         }
                                     </tbody>

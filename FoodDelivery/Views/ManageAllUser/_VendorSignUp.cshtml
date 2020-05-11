@@ -1,0 +1,269 @@
+﻿@model SignUpVendorVM
+@{
+    Layout = null;
+}
+<div class="container mt-3 mb-4">
+    <div class="col-12">
+        <div class="">
+            <h3 class="text-center mb-5">Partner with grubNow</h3>
+            <form asp-action="" method="post" id="FormCreate" enctype="multipart/form-data">
+                <div class="form-row ">
+                    <div class="col">
+                        <label>First Name</label> <span style="color:red">*</span>
+                        <input type="text" asp-for="FirstName" id="FirstName" class="form-control" placeholder="First Name">
+                        <span asp-validation-for="FirstName" class="text-danger small text-uppercase"></span>
+                    </div>
+                    <div class="col">
+                        <label>Last Name</label> <span style="color:red">*</span>
+                        <input type="text" asp-for="LastName" id="LastName" class="form-control" placeholder="Last Name">
+                        <span asp-validation-for="LastName" class="text-danger small text-uppercase"></span>
+                    </div>
+                </div>
+                <div class="form-group mt-2">
+                    <label for="exampleInputEmail1">Email address</label> <span style="color:red">*</span>
+                    <input type="email" class="form-control" id="Email" asp-for="Email" aria-describedby="emailHelp" placeholder="Enter Email">
+                    <span asp-validation-for="Email" class="text-danger small text-uppercase"></span>
+                </div>
+
+                <div class="form-row ">
+                    <div class="form-group mt-2 col-lg-6 col-md-12 col-12">
+                        <label>Store Name</label> <span style="color:red">*</span>
+                        <input type="text" class="form-control" asp-for="StoreName" id="StoreName" placeholder="Store Name">
+                        <span asp-validation-for="StoreName" class="text-danger small text-uppercase"></span>
+                    </div>
+                    <div class="form-group mt-2 col-lg-6 col-md-12 col-12">
+                        <label>Address or location</label> <span style="color:red">*</span>
+                        <input type="text" class="form-control" id="Address" asp-for="Address" placeholder="Address or location">
+                        <span asp-validation-for="Address" class="text-danger small text-uppercase"></span>
+                    </div>
+                </div>
+
+                <div class="form-row mt-2">
+                    <div class="col-lg-6 col-md-12 col-12">
+                        <label>Phone Number</label> <span style="color:red">*</span>
+                        <input type="text" asp-for="PhoneNumber" id="PhoneNumber" class="form-control" placeholder="Enter Phone Number">
+                        <span asp-validation-for="PhoneNumber" class="text-danger small text-uppercase"></span>
+                    </div>
+                    <div class="col-lg-6 col-md-12 col-12">
+                        <label>website URL</label>
+                        <input type="text" asp-for="Website_Url" class="form-control" placeholder="https://thenextway.com/">
+                        <span asp-validation-for="Website_Url" class="text-danger small text-uppercase"></span>
+                    </div>
+                </div>
+
+                <div class="form-row ">
+                    <div class="col">
+                        <label asp-for="Password"></label> <span style="color:red">*</span>
+                        <input type="password" asp-for="Password" id="Password" class="form-control" placeholder="Password">
+                        <span asp-validation-for="Password" class="text-danger small text-uppercase"></span>
+                    </div>
+                    <div class="col">
+                        <label asp-for="ConfirmPassword"></label> <span style="color:red">*</span>
+                        <input type="password" asp-for="ConfirmPassword" id="ConfirmPassword" class="form-control" placeholder="Confirm Password">
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small text-uppercase"></span>
+                    </div>
+                </div>
+
+                <div class="form-row ">
+                    <div class="col-lg-12 col-md-12 col-12">
+                        <label>Number of Location</label> <span style="color:red">*</span>
+                        <select asp-for="NunberOfLocationName" id="NunberOfLocationName" class="form-control" asp-items="Model.NunberOfLocation">
+                            <option>Select From List</option>
+                        </select>
+                        <span asp-validation-for="NunberOfLocationName" class="text-danger small text-uppercase"></span>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group mt-2 col-lg-12 col-md-12 col-12">
+                        <label>Cuisine</label> <span style="color:red">*</span>
+                        @Html.DropDownListFor(m => m.CuisineId, Model.Cuisine, htmlAttributes: new { @class = "form-control multiple-select", id = "CuisineIds", multiple = "multiple" })
+                        <span asp-validation-for="CuisineId" class="text-danger small text-uppercase"></span>
+                    </div>
+                </div>
+
+                <div class="form-row mt-2">
+                    <div class="col-lg-12 col-md-12 col-12">
+                        <div class="form-group mt-2">
+                            <label class="check_box">
+                                <p>Add Other Cuisine</p>
+                                <input type="checkbox" id="CheckBoxOtherCuisine">
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+
+                        <div class="form-group mt-2 d-none" id="OtherCuisine">
+                            <label asp-for="OtherCusine">Other Cuisine</label>
+                            <input type="text" asp-for="OtherCusine" id="OtherCusine" class="form-control" aria-describedby="emailHelp" placeholder="Enter Other Cuisine">
+                            <span asp-validation-for="OtherCusine" class="text-danger small text-uppercase"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group mt-2 col-lg-12 col-md-12 col-12">
+                        <label>Area</label> <span style="color:red">*</span>
+                        @Html.DropDownListFor(m => m.AreaId, Model.Area, htmlAttributes: new { @class = "form-control multiple-select", id = "AreaIds", multiple = "multiple" })
+                    </div>
+
+                    <span asp-validation-for="AreaId" class="text-danger small text-uppercase"></span>
+                </div>
+
+
+                <div class="form-row mt-2">
+                    <div class="col-lg-12 col-md-12 col-12">
+                        <div class="form-group mt-2">
+                            <label class="check_box">
+                                <p>Add Other Area</p>
+                                <input type="checkbox" id="CheckBoxOtherAreaV">
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+
+                        <div class="form-group mt-2 d-none" id="OtherAreaV">
+                            <label asp-for="OtherArea">Other Area</label>
+                            <input type="text" asp-for="OtherArea" id="OtherArea" class="form-control" aria-describedby="emailHelp" placeholder="Enter Other Area">
+                            <span asp-validation-for="OtherArea" class="text-danger small text-uppercase"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row mt-2">
+                    <div class="form-group mt-2 col-lg-12 col-md-12 col-12">
+                        <label>Category</label> <span style="color:red">*</span>
+                        @Html.DropDownListFor(m => m.CategoryId, Model.Category, htmlAttributes: new { @class = "form-control", id = "CategoryId" })
+                        <span asp-validation-for="CategoryId" class="text-danger small text-uppercase"></span>
+                    </div>
+                </div>
+
+                <div class="form-row mt-2">
+                    <div class="col-lg-12 col-md-12 col-12">
+                        <div class="form-group mt-2">
+                            <label class="check_box">
+                                <p>Add Other Category</p>
+                                <input type="checkbox" id="CheckBoxOtherCategory">
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+
+                        <div class="form-group mt-2 d-none" id="OtherCategory">
+                            <label asp-for="OtherCatregory">Other Category</label>
+                            <input type="text" asp-for="OtherCatregory" id="OtherCatregory" class="form-control" aria-describedby="emailHelp" placeholder="Enter Other Category">
+                            <span asp-validation-for="OtherCatregory" class="text-danger small text-uppercase"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-12 col-12">
+                    <label>Upload Logo</label>
+                    @*<input type="text" asp-for="Website_Url" class="form-control" placeholder="https://thenextway.com/">*@
+                    <input type="file" class="form-control" id="upload">
+
+                </div>
+                <div class="row mt-2">
+                    <div class="col-12">
+
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn">Submit</button>
+                        @*<a href="/Account/HandleSignUp" class="float-right" id="btnNext">Back</a>*@
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.4.0/bootbox.min.js"></script>
+<script src="~/dist/js/popper.min.js"></script>
+<script src="~/dist/js/BsMultiSelect.js"></script>
+<script>
+
+    //Use Plugin
+    $(".multiple-select").bsMultiSelect();
+
+    //Area
+    $('#CheckBoxOtherAreaV').click(function () {
+        if ($(this).prop("checked") == true) {
+            $("#OtherAreaV").removeClass('d-none');
+        }
+        else if ($(this).prop("checked") == false) {
+            $("#OtherAreaV").addClass('d-none');
+        }
+    });
+
+
+    //Cisine
+    $('#CheckBoxOtherCuisine').click(function () {
+        if ($(this).prop("checked") == true) {
+            $("#OtherCuisine").removeClass('d-none');
+        }
+        else if ($(this).prop("checked") == false) {
+            $("#OtherCuisine").addClass('d-none');
+        }
+    });
+
+
+    //Category
+    $('#CheckBoxOtherCategory').click(function () {
+        if ($(this).prop("checked") == true) {
+            $("#OtherCategory").removeClass('d-none');
+        }
+        else if ($(this).prop("checked") == false) {
+            $("#OtherCategory").addClass('d-none');
+        }
+    });
+
+
+
+    $("#FormCreate").on("submit", function (e) {
+        e.preventDefault();
+        var data = $("#AreaIds").val();
+        var AreaIDs = JSON.stringify(data);
+
+        var CusineIdsdata = $("#CuisineIds").val();
+        var CusineIds = JSON.stringify(CusineIdsdata);
+
+        // Adding Data In Form Data
+        var formData = new FormData();
+        formData.append("FirstName", $("#FirstName").val());
+        formData.append("LastName", $("#LastName").val());
+        formData.append("Email", $("#Email").val());
+        formData.append("StoreName", $("#StoreName").val());
+        formData.append("Address", $("#Address").val());
+        formData.append("PhoneNumber", $("#PhoneNumber").val());
+        formData.append("Website_Url", $("#Website_Url").val());
+        formData.append("Password", $("#Password").val());
+        formData.append("ConfirmPassword", $("#ConfirmPassword").val());
+        formData.append("CategoryId", $("#CategoryId").val());
+        formData.append("NunberOfLocationName", $("#NunberOfLocationName").val());
+        formData.append("OtherCusine", $("#OtherCusine").val());
+        formData.append("OtherArea", $("#OtherArea").val());
+        formData.append("OtherCatregory", $("#OtherCatregory").val());
+        formData.append("AreaIDs", JSON.stringify(data));
+        formData.append("CusineIds", JSON.stringify(CusineIdsdata));
+        formData.append("upload", $("#upload")[0].files[0]);
+
+        $.ajax({
+            url: '/Account/SignUpVendor',
+            data: formData,
+            processData: false,
+            contentType: false,
+            type: "POST",
+            success: function (response) {
+                if (response.status == true) {
+                    swal("God Job!", response.message, "success");
+                     window.location.reload();
+                   // bootbox.alert({ message: response.message, size: 'small' });
+                } else {
+                    swal("Error!", response.message, "error");
+                }
+            },
+            error: function () {
+
+            }
+        });
+
+    });
+</script>

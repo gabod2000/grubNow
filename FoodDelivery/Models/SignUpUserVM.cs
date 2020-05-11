@@ -28,7 +28,7 @@ namespace FoodDelivery.Models
 
         [Display(Name = "Password")]
         [Required(ErrorMessage = "{0} is required")]
-        [StringLength(50, ErrorMessage = "{0} must be from {2} - {1} characters", MinimumLength = 6)]
+        [StringLength(50, ErrorMessage = "Minimum Password Length is 6", MinimumLength = 6)]
         public string Password { get; set; }
 
 
@@ -39,7 +39,7 @@ namespace FoodDelivery.Models
 
         [Display(Name = "Confirm Password")]
         [Required(ErrorMessage = "{0} is required")]
-        [StringLength(50, ErrorMessage = "{0} must be from {2} - {1} characters", MinimumLength = 6)]
+        [StringLength(50, ErrorMessage = "Minimum Password Length is 6", MinimumLength = 6)]
         [Compare("Password", ErrorMessage = "Password does not match")]
         public string ConfirmPassword { get; set; }
     }

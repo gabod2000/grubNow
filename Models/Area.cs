@@ -8,6 +8,7 @@ namespace Models
     {
         public int Id { get; set; }
         public string AreaName { get; set; }
-        public virtual IList<DriverWithArea> MCQQnA { get; set; }
+        public virtual IList<DriverWithArea> DriverWithAreas { get; set; }
+        public virtual IList<VendorWithArea> VendorWithAreas { get; set; }
     }
 }

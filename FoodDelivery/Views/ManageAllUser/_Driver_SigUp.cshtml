@@ -1,0 +1,125 @@
+﻿@model SignUpDriverVM
+@{
+    Layout = null;
+}
+<div class="container mt-3 mb-4">
+    <div class="col-12">
+        <div class=" driver_form">
+            <h3 class="text-center mb-5">Sign up as driver</h3>
+            <form asp-action="" method="post" id="FormCreate">
+                <div class="form-row ">
+                    <div class="col">
+                        <label asp-for="FirstName">First Name</label> <span style="color:red">*</span>
+                        <input type="text" asp-for="FirstName" class="form-control" placeholder="First Name">
+                        <span asp-validation-for="FirstName" class="text-danger small text-uppercase"></span>
+                    </div>
+                    <div class="col">
+                        <label asp-for="LastName">Last Name</label> <span style="color:red">*</span>
+                        <input type="text" asp-for="LastName" class="form-control" placeholder="Last Name">
+                        <span asp-validation-for="LastName" class="text-danger small text-uppercase"></span>
+                    </div>
+                </div>
+                <div class="form-group mt-2">
+                    <label for="exampleInputEmail1" asp-for="Email">Email address</label> <span style="color:red">*</span>
+                    <input type="email" class="form-control" asp-for="Email" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter Email">
+                    <span asp-validation-for="Email" class="text-danger small text-uppercase"></span>
+                </div>
+                <div class="form-group mt-2">
+                    <label asp-for="PhoneNumber">Phone Number</label> <span style="color:red">*</span>
+                    <input type="text" asp-for="PhoneNumber" class="form-control" aria-describedby="emailHelp" placeholder="Enter Phone Number">
+                    <span asp-validation-for="PhoneNumber" class="text-danger small text-uppercase"></span>
+                </div>
+                <div class="form-group mt-2">
+                    <label asp-for="Address"></label> <span style="color:red">*</span>
+                    <input type="text" asp-for="Address" class="form-control" aria-describedby="emailHelp" placeholder="Enter Address">
+                    <span asp-validation-for="Address" class="text-danger small text-uppercase"></span>
+                </div>
+                <div class="form-group mt-2">
+                    <label>Area</label> <span style="color:red">*</span>
+                    @Html.DropDownListFor(m => m.AreaId, Model.Area, htmlAttributes: new { @class = "form-control multiple-select", id = "AreaIds", multiple = "multiple" })
+                </div>
+
+                <div class="form-group mt-2">
+                    <label class="check_box">
+                        <p>Add Other Area</p>
+                        <input type="checkbox" id="CheckBoxOtherArea">
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+
+                <div class="form-group mt-2 d-none" id="OtherArea">
+                    <label asp-for="OtherArea">Other Area</label>
+                    <input type="text" asp-for="OtherArea" class="form-control" aria-describedby="emailHelp" placeholder="Enter Other Area">
+                    <span asp-validation-for="OtherArea" class="text-danger small text-uppercase"></span>
+                </div>
+
+                <div class="form-row ">
+                    <div class="col">
+                        <label asp-for="Password"></label> <span style="color:red">*</span>
+                        <input type="password" asp-for="Password" class="form-control" placeholder="Enter Password">
+                        <span asp-validation-for="Password" class="text-danger small text-uppercase"></span>
+                    </div>
+                    <div class="col">
+                        <label asp-for="ConfirmPassword"></label> <span style="color:red">*</span>
+                        <input type="password" asp-for="ConfirmPassword" class="form-control" placeholder="Enter Confirm Password">
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small text-uppercase"></span>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-12">
+
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn">Submit</button>
+                        @*<a href="/Account/HandleSignUp" class="float-right" id="btnNext">Back</a>*@
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.4.0/bootbox.min.js"></script>
+<script src="~/dist/js/popper.min.js"></script>
+<script src="~/dist/js/BsMultiSelect.js"></script>
+<script>
+
+    //Use Plugin
+    $(".multiple-select").bsMultiSelect();
+
+    $('#CheckBoxOtherArea').click(function () {
+        if ($(this).prop("checked") == true) {
+            $("#OtherArea").removeClass('d-none');
+        }
+        else if ($(this).prop("checked") == false) {
+            $("#OtherArea").addClass('d-none');
+        }
+    });
+
+
+
+    $("#FormCreate").on("submit", function (e) {
+        e.preventDefault();
+        var data = $("#AreaIds").val();
+        var AreaIDs = JSON.stringify(data);
+        var frm = $(this);
+        $.ajax({
+            url: '/Account/SignUpDriver',
+            type: frm.attr('method'),
+            data: frm.serialize() + "&AreaIDs=" + AreaIDs,
+            success: function (response) {
+                if (response.status == true) {
+                    swal("God Job!", response.message, "success");
+                     window.location.reload();
+                } else {
+                      swal("Error!", response.message, "error");
+                }
+            },
+            error: function () {
+
+            }
+        });
+
+    });
+</script>

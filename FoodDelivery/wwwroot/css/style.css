@@ -103,6 +103,14 @@ p {
         box-shadow: none;
     }
 
+/*.multiple-select {
+    height: 300px !important;
+    overflow-y: auto !important;
+}*/
+.dashboardcode-bsmultiselect>ul:nth-child(2){
+    height:300px !important;
+    overflow-y:auto !important;
+}
 .form_location > div > a {
     width: 100%;
     padding: 15px;

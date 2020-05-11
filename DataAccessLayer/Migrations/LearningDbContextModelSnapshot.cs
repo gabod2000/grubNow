@@ -357,6 +357,31 @@ namespace DataAccessLayer.Migrations
                     b.ToTable("DriverWithAreas");
                 });
 
+            modelBuilder.Entity("Models.OtherLocation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("LocationAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LocationName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("VendorID")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VendorID");
+
+                    b.ToTable("OtherLocations");
+                });
+
             modelBuilder.Entity("Models.Vendor", b =>
                 {
                     b.Property<int>("Id")
@@ -367,19 +392,16 @@ namespace DataAccessLayer.Migrations
                     b.Property<string>("Address_Location")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("AreaId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("CuisineId")
                         .HasColumnType("int");
 
                     b.Property<string>("NumberOfLocation")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("StoreName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UniqueFileName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
@@ -390,15 +412,53 @@ namespace DataAccessLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AreaId");
-
                     b.HasIndex("CategoryId");
-
-                    b.HasIndex("CuisineId");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("Vendors");
+                });
+
+            modelBuilder.Entity("Models.VendorWithArea", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("AreaId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("VendorId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AreaId");
+
+                    b.HasIndex("VendorId");
+
+                    b.ToTable("VendorWithAreas");
+                });
+
+            modelBuilder.Entity("Models.VendorWithCuisine", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("CuisineId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("VendorId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VendorId");
+
+                    b.ToTable("VendorWithCuisines");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -462,7 +522,7 @@ namespace DataAccessLayer.Migrations
             modelBuilder.Entity("Models.DriverWithArea", b =>
                 {
                     b.HasOne("Models.Area", "Area")
-                        .WithMany("MCQQnA")
+                        .WithMany("DriverWithAreas")
                         .HasForeignKey("AreaId");
 
                     b.HasOne("Models.Driver", "Driver")
@@ -470,23 +530,46 @@ namespace DataAccessLayer.Migrations
                         .HasForeignKey("DriverId");
                 });
 
+            modelBuilder.Entity("Models.OtherLocation", b =>
+                {
+                    b.HasOne("Models.Vendor", "Vendor")
+                        .WithMany()
+                        .HasForeignKey("VendorID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Models.Vendor", b =>
                 {
-                    b.HasOne("Models.Area", "Area")
-                        .WithMany()
-                        .HasForeignKey("AreaId");
-
                     b.HasOne("Models.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId");
 
-                    b.HasOne("Models.Cuisine", "Cuisine")
-                        .WithMany()
-                        .HasForeignKey("CuisineId");
-
                     b.HasOne("Models.AppUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("Models.VendorWithArea", b =>
+                {
+                    b.HasOne("Models.Area", "Area")
+                        .WithMany("VendorWithAreas")
+                        .HasForeignKey("AreaId");
+
+                    b.HasOne("Models.Vendor", "Vendor")
+                        .WithMany("VendorWithAreas")
+                        .HasForeignKey("VendorId");
+                });
+
+            modelBuilder.Entity("Models.VendorWithCuisine", b =>
+                {
+                    b.HasOne("Models.Cuisine", "Cuisine")
+                        .WithMany("VendorWithCuisines")
+                        .HasForeignKey("VendorId");
+
+                    b.HasOne("Models.Vendor", "Vendor")
+                        .WithMany("VendorWithCuisines")
+                        .HasForeignKey("VendorId");
                 });
 #pragma warning restore 612, 618
         }

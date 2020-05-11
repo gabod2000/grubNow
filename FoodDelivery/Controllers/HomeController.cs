@@ -187,7 +187,8 @@ namespace FoodDelivery.Controllers
             return View();
         }
 
-        public IActionResult GooglrMap()
+        [HttpGet]
+        public IActionResult GoogleMap()
         {
             return View();
         }

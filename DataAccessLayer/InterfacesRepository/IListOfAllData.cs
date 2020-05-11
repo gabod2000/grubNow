@@ -12,9 +12,19 @@ namespace DataAccessLayer.InterfacesRepository
         IEnumerable<Category> GetCategory();
         Category GetCategoryById(int id);
         public IEnumerable<Vendor> GetVendor();
-        public Vendor GetVendorById(string UserId);
+        public Vendor GetVendorByUserId(string UserId);
         public IEnumerable<Driver> GetDriver();
-        public Driver GetDriverById(string UserId);
+        public Driver GetDriverByUserId(string UserId);
+        public List<VendorWithCuisine> GetsVendorWithCusineById(int id);
+        public List<VendorWithArea> GetsVendorWithAreaById(int id);
+        public IEnumerable<OtherLocation> GetOtherLocationByVendorID(int VendorID);
+        public List<DriverWithArea> GetsDriverWithAreaById(int id);
+        public bool CheckAlreadyExistArea(string AreaName);
+        public bool CheckAlreadyExistCusine(string CusineName);
+        public bool CheckAlreadyExistCategory(string Category);
+        public VendorWithArea GetVendorWithAreaById(int id);
+        public DriverWithArea GetDriverWithAreaById(int id);
+
 
     }
 }

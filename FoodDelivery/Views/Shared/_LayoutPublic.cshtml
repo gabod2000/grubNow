@@ -59,7 +59,7 @@
                                         <div class="input-group-prepend">
                                             <div class="input-group-text"><i class="fas fa-map-marker-alt"></i></div>
                                         </div>
-                                        <input type="text" class="form-control input_dr" id="inlineFormInputGroup" placeholder="Enter your address...">
+                                        <input type="text" class="form-control input_dr" id="searchmap" placeholder="Enter your address...">
 
                                         <div class="input-group-prepend sub_button">
                                             <div class="input-group-text"><a href="#"><i class="fas fa-chevron-right"></i></a></div>
@@ -68,7 +68,7 @@
                                             <button class="btn" href="#">DELIVERY</button>
                                             <button class="btn" href="#">PICKUP</button>
                                         </div>
-                                        <a href="/Home/GeoLocation" class="current_location"><i class="fa fa-location-arrow"></i> Use Current Location</a>
+                                        <a href="/Home/Googlemap"   id="GetCurrentLocation" class="current_location"><i class="fa fa-location-arrow"></i> Use Current Location</a>
                                     </div>
                                 </div>
                             </div>
@@ -111,16 +111,16 @@
                         <li>
                             <a href="#!" class="css-kbnj0e">Developers</a>
                         </li>
-                        <li>
-                            <a href="#!" class="css-kbnj0e">API Docs</a>
-                        </li>
-                        <li>
-                            <a href="#!" class="css-kbnj0e">Gift Cards</a>
-                        </li>
+                        @*<li>
+                                <a href="#!" class="css-kbnj0e">API Docs</a>
+                            </li>
+                            <li>
+                                <a href="#!" class="css-kbnj0e">Gift Cards</a>
+                            </li>
 
-                        <li>
-                            <a href="#!" class="css-kbnj0e">Pickup</a>
-                        </li>
+                            <li>
+                                <a href="#!" class="css-kbnj0e">Pickup</a>
+                            </li>*@
 
                     </ul>
                 </div>
@@ -292,12 +292,12 @@
                 $(".delivery1").show();
             });
 
-              $('.input_dr1').on('click touch', function () {
+            $('.input_dr1').on('click touch', function () {
                 $(".current_location1").show();
                 $(".delivery1").show();
             });
 
-             $(document).on('click touch', function (event) {
+            $(document).on('click touch', function (event) {
                 if (!$(event.target).parents().addBack().is('.delivery1, .current_location1, .input_dr1')) {
                     $('.current_location1').hide();
                     $('.delivery1').hide();
@@ -306,6 +306,7 @@
         });
     </script>
     @RenderSection("Scripts", required: false)
+    <script src="~/js/GoogleMapLocation.js"></script>
 </body>
 </html>
 
