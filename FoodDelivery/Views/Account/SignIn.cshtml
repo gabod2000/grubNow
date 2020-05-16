@@ -4,7 +4,7 @@
 }
 
 
-@*<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <title>Login V5</title>
@@ -94,6 +94,7 @@
                         </a>
                     </div>
                 </form>
+
             </div>
         </div>
     </div>
@@ -119,7 +120,7 @@
     <script src="~/js/main.js"></script>
 
 </body>
-</html>*@
+</html>
 
 
 
@@ -148,7 +149,7 @@
 
 
 
-<div class="row">
+@*<div class="row">
     <div class="col-md-10 offset-1">
         <form asp-area="" asp-controller="Account" id="FormCreate" asp-action="SignIn" method="post">
             @Html.AntiForgeryToken()
@@ -176,15 +177,15 @@
                 </button>
                 <br>
                 <div class="form-group">
-                    @*<a class="btn btn-link text-center text-danger" id="btnforget" href="/Account/ResetPasswordLink">
+                    <a class="btn btn-link text-center text-danger" id="btnforget" href="/Account/ResetPasswordLink">
                             Forget Your Password.
-                        </a>*@
+                        </a>
 
                 </div>
             </div>
         </form>
     </div>
-</div>
+</div>*@
 
 
 @* Populate All Partial View Models Here *@
@@ -197,48 +198,48 @@
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.4.0/bootbox.min.js"></script>
 <script>
-    $("#FormCreate").on("submit", function (e) {
-        e.preventDefault();
-        var frm = $(this);
-        debugger
-        $.ajax({
-            url: frm.attr('action'),
-            type: frm.attr('method'),
-            data: frm.serialize(),
-            success: function (response) {
-                if (response.status == true) {
-                    bootbox.alert({ message: response.message, size: 'small' });
-                    window.location.href = '/Home/Index';
-                }
-                else {
-                    bootbox.alert({ message: response.message, size: 'small' });
-                    console.warn(response.message);
-                }
-            },
-            error: function () {
+    //$("#FormCreate").on("submit", function (e) {
+    //    e.preventDefault();
+    //    var frm = $(this);
+    //    debugger
+    //    $.ajax({
+    //        url: frm.attr('action'),
+    //        type: frm.attr('method'),
+    //        data: frm.serialize(),
+    //        success: function (response) {
+    //            if (response.status == true) {
+    //                bootbox.alert({ message: response.message, size: 'small' });
+    //                window.location.href = '/Home/Index';
+    //            }
+    //            else {
+    //                bootbox.alert({ message: response.message, size: 'small' });
+    //                console.warn(response.message);
+    //            }
+    //        },
+    //        error: function () {
 
-            }
-        });
+    //        }
+    //    });
 
-    });
+    //});
 
 
-    //--------------------------------------------------------
-    //forget Model
-    $("#btnforget").on("click", function (e) {
-        e.preventDefault();
-        var btn = $(this);
-        $.ajax({
-            url: btn.attr('href'),
-            type: 'GET',
-            success: function (response) {
-                $("#CreateModal").html(response);
-                $("#CreateModal").modal('show');
-            },
-            error: function () {
-            }
-        });
-    });
+    ////--------------------------------------------------------
+    ////forget Model
+    //$("#btnforget").on("click", function (e) {
+    //    e.preventDefault();
+    //    var btn = $(this);
+    //    $.ajax({
+    //        url: btn.attr('href'),
+    //        type: 'GET',
+    //        success: function (response) {
+    //            $("#CreateModal").html(response);
+    //            $("#CreateModal").modal('show');
+    //        },
+    //        error: function () {
+    //        }
+    //    });
+    //});
 
 
 

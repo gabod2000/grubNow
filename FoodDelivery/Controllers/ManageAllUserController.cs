@@ -13,7 +13,7 @@ using Models;
 
 namespace FoodDelivery.Controllers
 {
-   // [Authorize]
+    [Authorize]
     public class ManageAllUserController : Controller
     {
         private readonly UserManager<AppUser> _userManger;
@@ -115,9 +115,57 @@ namespace FoodDelivery.Controllers
 
 
         [HttpGet]
-        public IActionResult EditVendor(string UserId)
+        public IActionResult EditVendor(string id)
         {
-            return View();
+            SignUpVendorVM vendorVM = null;
+            var user= _userManger.FindByIdAsync(id).Result;
+            if (user!=null)
+            {
+                
+                
+                vendorVM= new SignUpVendorVM();
+                vendorVM.Id = user.Id;
+                vendorVM.FirstName = user.FirstName;
+                vendorVM.LastName = user.LastName;
+                vendorVM.PhoneNumber = user.PhoneNumber;
+                vendorVM.Email = user.Email;
+
+                // Geting Vendor Data
+                var vendor = _listOfAll.GetVendorByUserId(id);
+                if (vendor!=null)
+                {
+                    vendorVM.CategoryId = vendor.Category.Id;
+                    vendorVM.StoreName = vendor.StoreName;
+                    vendorVM.Website_Url = vendor.Website_Url;
+                    vendorVM.Address = vendor.NumberOfLocation;
+                }
+
+
+
+                vendorVM.Area = _listOfAll.GetArea()?.Select(p => new SelectListItem()
+                {
+                    Text = p.AreaName,
+                    Value = p.Id.ToString()
+                }).ToList();
+                vendorVM.Category = _listOfAll.GetCategory()?.Select(p => new SelectListItem()
+                {
+                    Text = p.Name,
+                    Value = p.Id.ToString()
+                }).ToList();
+                vendorVM.Cuisine = _listOfAll.GetCuisine()?.Select(p => new SelectListItem()
+                {
+                    Text = p.Name,
+                    Value = p.Id.ToString()
+                }).ToList();
+
+                vendorVM.NunberOfLocation = new List<SelectListItem>()
+                {
+                    new SelectListItem() { Value = "1 - 4", Text = "1 - 4" },
+                    new SelectListItem() { Value = "4 - 10", Text = "4 - 10" },
+                    new SelectListItem() { Value = "10 - 20", Text = "10 - 20" }
+                };
+            }
+            return View(vendorVM);
         }
 
 

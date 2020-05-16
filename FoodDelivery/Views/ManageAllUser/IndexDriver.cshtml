@@ -12,8 +12,13 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header">
-                                All Driver  <a class="float-right btn btn-primary flri" href="#" title="Create" id="CreateDriver"><i class="fas fa-book"></i> Create</a>
-                            </div>
+
+                                All Driver
+                                @if (User.IsInRole("Admin"))
+                                { 
+                                    <a class="float-right btn btn-primary flri" href="#" title="Create" id="CreateDriver"><i class="fas fa-book"></i> Create</a>
+                                }
+                                </div>
                             <div class="card-body">
                                 <table class="table ExSTable ExSDataTable" id="TabDriver">
                                     <thead class="thead-dark">
@@ -38,7 +43,7 @@
                                             <td>@item.PhoneNumber</td>
                                             <td>@item.Address</td>
                                             <td>
-                                                <button class="btn btn-sm btn-info "  title="Edit"    id="js-Update"  data-id="@item.Id"><i class="fas fa-pen"></i> </button>
+                                                <button class="btn btn-sm btn-info "  title="Edit"   id="js-update" href="/ManageAllUser/EditDriver/@item.Id"><i class="fas fa-pen"></i> </button>
                                                 <button class="btn btn-sm btn-danger " id="js-delete" title="Delete" href="/ManageAllUser/DeleteDriver/@item.Id" ><i class="fas fa-trash-alt"></i> </button>
                                             </td>
                                         </tr>

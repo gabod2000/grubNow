@@ -183,7 +183,7 @@ namespace DataAccessLayer.ClassesRepository
         /// <returns></returns>
         public Vendor GetVendorByUserId(string UserId)
         {
-            return _context.Vendors
+            return _context.Vendors.Include(x=>x.Category)
                             .FirstOrDefault(p => p.UserId == UserId);
         }
 

@@ -11,7 +11,11 @@
                 <div class="col-md-12">
                     <div class="card">
                         <div class="card-header">
-                            All User  <a class="float-right btn btn-primary flri" href="#" title="Create" id="CreateUser"><i class="fas fa-book"></i> Create</a>
+                            All User
+                            @if (User.IsInRole("Admin"))
+                            {
+                               <a class="float-right btn btn-primary flri" href="#" title="Create" id="CreateUser"><i class="fas fa-book"></i> Create</a>
+                            }
                         </div>
                         <div class="card-body">
                             <table class="table ExSTable ExSDataTable" id="TabUser">
@@ -35,7 +39,7 @@
                                         <td>@item.Email</td>
                                         <td>@item.PhoneNumber</td>
                                         <td>
-                                            <button class="btn btn-sm btn-info "  id="js-Update"   data-id="@item.Id"><i class="fas fa-pen"></i> </button>
+                                            <button class="btn btn-sm btn-info " id="js-update" href="/ManageAllUser/EditUser/@item.Id"><i class="fas fa-pen"></i> </button>
                                             <button class="btn btn-sm btn-danger " id="js-delete"    href="/ManageAllUser/DeleteUser/@item.Id"><i class="fas fa-trash-alt"></i></button>
                                         </td>
                                     </tr>

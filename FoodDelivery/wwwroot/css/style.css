@@ -536,6 +536,20 @@ label {
     padding: 17px 0 0 0;
 }
 
+
+.custom_css_for_ > button {
+    display: inline-block;
+    margin-top: 10px;
+    background-color: #f87da9;
+    color: #fff;
+    padding: 6px 46px;
+    font-size: 20px;
+    border-radius: 2px;
+    text-decoration: none;
+}
+
+
+
 .css-1w4k9rf {
     font-family: 'PostmatesStd',Helvetica Neue,Helvetica;
     font-size: 14px;

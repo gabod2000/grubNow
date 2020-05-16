@@ -138,26 +138,13 @@ $(document).ready(function () {
         window.location.href = "/Account/HandleSignUp";
     });
 
-    //Btn Login Call
+
+
+
+    //Btn Sign Up Call
     $("#btnLogin").on("click", function () {
-        debugger
-        var url = "/Account/SignIn";
-        $.ajax({
-            url: url,
-            type: 'GET',
-            success: function (response) {
-                $("#exampleModalLongTitle").html("Sign In");
-                $("#CreateModal").html(response);
-                $("#GenericModal").modal('show');
-            },
-            error: function () {
-
-            }
-        });
-
+        window.location.href = "/Identity/Account/Login";
     });
-
-
 
     //===============================================================
 
@@ -213,6 +200,58 @@ $(document).ready(function () {
 
 });
 
+//Update Usres
+//=======================================================================
+// update Vendor
+$("#TabVendor").delegate("#js-update", "click", function (e) {
+    e.preventDefault();
+    var btn = $(this);
+    var url = btn.attr('href');
+    debugger
+    GenericAjexCall(url, "Edit Vendor");
+});
+//======================================================================
+// update User
+$("#TabUser").delegate("#js-update", "click", function (e) {
+    e.preventDefault();
+    var btn = $(this);
+    var url = btn.attr('href');
+    debugger
+    GenericAjexCall(url, "Edit User");
+});
+//=======================================================================
+// update Driver
+$("#TabDriver").delegate("#js-update", "click", function (e) {
+    e.preventDefault();
+    var btn = $(this);
+    var url = btn.attr('href');
+    debugger
+    GenericAjexCall(url,"Edit Driver");
+});
+//=======================================================================
+
+
+
+
+//Generic Ajex Call for get 
+//===================================================================
+GenericAjexCall = function (url,Model_Title) {
+    $.ajax({
+        url: url,
+        type: "GET",
+        //data: { UserId: id },
+        success: function (response) {
+            $("#exampleModalLongTitle").html(Model_Title);
+            $("#CreateModal").html(response);
+            $("#GenericModal").modal('show');
+        },
+        error: function () {
+
+        }
+    });
+}
+
+//==================================================================
 
 DeleteData = function (url) {
     swal({

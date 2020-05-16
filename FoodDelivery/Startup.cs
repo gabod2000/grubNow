@@ -2,6 +2,7 @@ using System;
 using DataAccessLayer;
 using DataAccessLayer.ClassesRepository;
 using DataAccessLayer.InterfacesRepository;
+using FoodDelivery.Constant;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,6 +29,7 @@ namespace FoodDelivery
                 .AddJsonFile($"appsettings.{_evn.EnvironmentName}.json");
 
             _config = builder.Build();
+            Constants.ConnectionString= _config.GetSection("ConnectionStrings:LearningDbConnectionString").Value;
 
         }
 
@@ -45,9 +47,9 @@ namespace FoodDelivery
             //var emailTokenProviderType = typeof(EmailTokenProvider<AppUser>);
 
             // Add Identity And EntityFrameWorkStore 
-            services.AddIdentity<AppUser, AppRole>()
-                    .AddEntityFrameworkStores<LearningDbContext>()
-                    .AddDefaultTokenProviders();
+            //services.AddIdentity<AppUser, AppRole>()
+            //        .AddEntityFrameworkStores<LearningDbContext>()
+            //        .AddDefaultTokenProviders();
             // .AddTokenProvider(TokenOptions.DefaultEmailProvider, emailTokenProviderType);
 
             services.AddTransient<IListOfAllData, ListOfAllDataReposity>();
@@ -70,13 +72,33 @@ namespace FoodDelivery
                 config.AccessDeniedPath = "";
                 config.Cookie.HttpOnly = true;
                 config.Cookie.Name = "Learning";
-                config.LoginPath = "/Account/UnAuthorize";
+                config.LoginPath = "/Identity/Account/Login";
                 config.LogoutPath = "/Account/SignOut";
                 config.ReturnUrlParameter = "ReturnUrl";
                 config.ExpireTimeSpan = TimeSpan.FromMinutes(30);
             });
 
+            //
+            services.AddAuthentication()
+            .AddGoogle(options =>
+            {
+                IConfigurationSection googleAuthNSection =
+                    _config.GetSection("Authentication:Google");
+
+                options.ClientId = googleAuthNSection["ClientId"];
+                options.ClientSecret = googleAuthNSection["ClientSecret"];
+            })
+            .AddFacebook(microsoftOptions =>
+            {
+                microsoftOptions.AppId = _config["Authentication:Facebook:AppId"];
+                microsoftOptions.AppSecret = _config["Authentication:Facebook:AppSecret"];
+            });
+
+            services.AddRazorPages();
+
+
            
+
 
             // Add Application File Related To Data Base 
             services.AddTransient<IEfRepository, EfRepository>();
@@ -110,6 +132,11 @@ namespace FoodDelivery
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=PublicSite}/{id?}");
+
+                endpoints.MapAreaControllerRoute(
+                    name: "areas", "areas",
+                    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapRazorPages();
             });
         }
     }

@@ -59,7 +59,7 @@
                                         <div class="input-group-prepend">
                                             <div class="input-group-text"><i class="fas fa-map-marker-alt"></i></div>
                                         </div>
-                                        <input type="text" class="form-control input_dr" id="searchmap" placeholder="Enter your address...">
+                                        <input type="text" class="form-control input_dr" id="pac-input" placeholder="Enter your address...">
 
                                         <div class="input-group-prepend sub_button">
                                             <div class="input-group-text"><a href="#"><i class="fas fa-chevron-right"></i></a></div>
@@ -68,7 +68,7 @@
                                             <button class="btn" href="#">DELIVERY</button>
                                             <button class="btn" href="#">PICKUP</button>
                                         </div>
-                                        <a href="/Home/Googlemap"   id="GetCurrentLocation" class="current_location"><i class="fa fa-location-arrow"></i> Use Current Location</a>
+                                        <a href="/Home/Googlemap" id="GetCurrentLocation" class="current_location"><i class="fa fa-location-arrow"></i> Use Current Location</a>
                                     </div>
                                 </div>
                             </div>
@@ -259,6 +259,15 @@
     </div>
     <!-- ========== model login ============ -->
 
+    @*<script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARsmUBbNRtRKdc2oUNjfd69jYeuxdoyeE&callback=initMap">
+    </script>*@
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARsmUBbNRtRKdc2oUNjfd69jYeuxdoyeE&libraries=places&callback=initAutocomplete"
+            async defer></script>
+
+    <script src="~/js/GeLocation.js"></script>
+
     <script>
 
         $(document).ready(function () {
@@ -306,7 +315,7 @@
         });
     </script>
     @RenderSection("Scripts", required: false)
-    <script src="~/js/GoogleMapLocation.js"></script>
+    @*<script src="~/js/GoogleMapLocation.js"></script>*@
 </body>
 </html>
 

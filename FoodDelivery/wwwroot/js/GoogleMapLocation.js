@@ -1,153 +1,81 @@
 ﻿
-////$("#GetCurrentLocation").on("click", function (e) {
-////    e.preventDefault();
-////    debugger
-////    if (navigator.geolocation) {
-////        navigator.geolocation.getCurrentPosition(function (position) {
-////            var pos = {
-////                lat: position.coords.latitude,
-////                lng: position.coords.longitude
-////            };
+var map, infoWindow;
+function initMap() {
+    map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: 12.971599, lng: 77.594563 },
+        zoom: 12,
+        //scaleControl: true,
+        //zoomControl: true,
+        //mapTypeControl: true,
+        //streetViewControl: true,
+        //rotateControl: true,
+        //fullscreenControl: true
+    });
 
-////            $.ajax({
-////                url: '/Home/GoogleMap',
-////                type: 'GET',
-////                data: { latitude: pos.lat, langitude: pos.lng },
-////                success: function (response) {
-////                    if (response.status == true) {
+    infoWindow = new google.maps.InfoWindow;
 
-////                    }
-////                    else {
-////                        bootbox.alert({ message: response.message, size: 'small' });
-////                        console.warn(response.message);
-////                    }
-////                },
-////                error: function () {
+    var marker = new google.maps.Marker({
+        position: {
+            lat: 12.971599,
+            lng: 77.594563,
+        },
+        map: map,
+        draggable: true,
+    });
 
-////                }
-////            });
+    // Try HTML5 geolocation.
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (position) {
+            var pos = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+            marker.setPosition(pos);
+            map.setCenter(pos);
 
+        }, function () {
+            handleLocationError(true, infoWindow, map.getCenter());
 
-////        });
-////    } 
-////});
+        });
 
+    } else {
+        // Browser doesn't support Geolocation
+        handleLocationError(false, infoWindow, map.getCenter());
+    }
 
+    var searchBox = new google.maps.places.SearchBox(document.getElementById('searchmap'));
+    google.maps.event.addListener(searchBox, 'places_changed', function () {
+        var places = searchBox.getPlaces();
+        var bounds = new google.maps.LatLngBounds();
+        var i, place;
+        for (i = 0; place = places[i]; i++) {
+            bounds.extend(place.geometry.location);
+            marker.setPosition(place.geometry.location);
+        }
+        map.fitBounds(bounds);
+        map.setZoom(15);
+    });
 
+    google.maps.event.addListener(marker, 'dragend', function () {
+        latlng = marker.getPosition();
+        url = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=' + latlng.lat() + ',' + latlng.lng() + '&sensor=false';
+        $.get(url, function (data) {
+            if (data.status == 'OK') {
+                map.setCenter(data.results[0].geometry.location);
+                if (confirm('Do you also want to change location text to ' + data.results[0].formatted_address) === true) {
+                    $('#searchmap').val(data.results[0].formatted_address);
+                    $('#lat').val(data.results[0].geometry.location.lat);
+                    $('#lng').val(data.results[0].geometry.location.lng);
+                }
+            }
+        });
+    });
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-//////Get Current Location
-////var x = document.getElementById("demo");
-////function getLocation() {
-////    debugger
-////    if (navigator.geolocation) {
-////        navigator.geolocation.getCurrentPosition(showPosition);
-////    } else {
-////        x.innerHTML = "Geolocation is not supported by this browser.";
-////    }
-////}
-
-////function showPosition(position) {
-////    debugger
-////    Data.latitude = position.coords.latitude;
-////    Data.langitude = position.coords.longitude;
-////}
-
-
-
-
-//function initAutocomplete() {
-
-//    var map;
-
-//    if (navigator.geolocation) {
-//        navigator.geolocation.getCurrentPosition(function(position) {
-//            debugger
-//            // map = new google.maps.Map(document.getElementById('map'), {
-//            //     center: { lat: position.coords.latitude, lng: position.coords.longitude},
-//            //    zoom: 13,
-//            //    mapTypeId: 'roadmap'
-//            //});
-
-//        });
-//    };
-
-   
-
-
-//     map = new google.maps.Map(document.getElementById('map'), {
-//        center: { lat: pos.lat, lng: pos.lng },
-//        zoom: 13,
-//        mapTypeId: 'roadmap'
-//    });
-
-//    var input = document.getElementById('pac-input');
-//    var searchBox = new google.maps.places.SearchBox(input);
-//    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
-
-//    map.addListener('bounds_changed', function () {
-//        searchBox.setBounds(map.getBounds());
-//    });
-
-//    var markers = [];
-
-//    searchBox.addListener('places_changed', function () {
-//        var places = searchBox.getPlaces();
-
-//        if (places.length == 0) {
-//            return;
-//        }
-
-
-//        markers.forEach(function (marker) {
-//            marker.setMap(null);
-//        });
-//        markers = [];
-
-
-//        var bounds = new google.maps.LatLngBounds();
-//        places.forEach(function (place) {
-//            if (!place.geometry) {
-//                console.log("Returned place contains no geometry");
-//                return;
-//            }
-//            var icon = {
-//                url: place.icon,
-//                size: new google.maps.Size(71, 71),
-//                origin: new google.maps.Point(0, 0),
-//                anchor: new google.maps.Point(17, 34),
-//                scaledSize: new google.maps.Size(25, 25)
-//            };
-
-
-//            markers.push(new google.maps.Marker({
-//                map: map,
-//                // icon: "about.jpg",
-//                title: place.name,
-//                position: place.geometry.location,
-//                animation: google.maps.Animation.BOUNCE
-//            }));
-
-//            if (place.geometry.viewport) {
-
-//                bounds.union(place.geometry.viewport);
-//            } else {
-//                bounds.extend(place.geometry.location);
-//            }
-//        });
-//        map.fitBounds(bounds);
-//    });
-//}
+function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+    infoWindow.setPosition(pos);
+    infoWindow.setContent(browserHasGeolocation ?
+        'Error: The Geolocation service failed.' :
+        'Error: Your browser doesn\'t support geolocation.');
+    infoWindow.open(map);
+}

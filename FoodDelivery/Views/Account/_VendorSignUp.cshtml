@@ -252,9 +252,12 @@
             contentType: false,
             type: "POST",
             success: function (response) {
+                debugger
                 if (response.status == true) {
                     bootbox.alert({ message: response.message, size: 'small' });
                 } else {
+
+                    debugger
                     bootbox.alert({ message: response.message, size: 'small' });
                 }
             },

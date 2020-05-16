@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using DataAccessLayer;
 using DataAccessLayer.InterfacesRepository;
 using FoodDelivery.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -26,7 +27,6 @@ namespace FoodDelivery.Controllers
         private readonly UserManager<AppUser> _userManger;
         private IEfRepository _efRepository;
         private IListOfAllData _listOfAll;
-        private IHostingEnvironment Environment;
         public AccountController(UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager, RoleManager<AppRole> roleManager, IEfRepository efRepository, IListOfAllData listOfAll, IHostingEnvironment environment)
         {
@@ -35,7 +35,6 @@ namespace FoodDelivery.Controllers
             _roleManager = roleManager;
             _listOfAll = listOfAll;
             _efRepository = efRepository;
-            Environment = environment;
         }
 
         #region SignIn
@@ -47,6 +46,11 @@ namespace FoodDelivery.Controllers
 
         [HttpGet]
         public IActionResult HandleSignUp()
+        {
+            return View();
+        }
+
+        public IActionResult ExternalLogin() 
         {
             return View();
         }
@@ -189,290 +193,295 @@ namespace FoodDelivery.Controllers
 
         #region VendorSignUp
         [HttpPost]
-        public IActionResult SignUpVendor(SignUpVendorVM model, string AreaIDs,string CusineIds,IFormFile upload)
+        public async Task<IActionResult> SignUpVendor(SignUpVendorVM model, string AreaIDs,string CusineIds,IFormFile upload)
         {
             bool Status = false;
             string Message = string.Empty;
-            //List Of AreaIds
-            List<string> ListOfArea = JsonConvert.DeserializeObject<List<string>>(AreaIDs);
-
-            //List Of CusineIds
-            List<string> ListOfCusineIds = JsonConvert.DeserializeObject<List<string>>(CusineIds);
-
-            if (ModelState.IsValid)
+            try
             {
 
-                #region Check User Exist 
+                //List Of AreaIds
+                List<string> ListOfArea = JsonConvert.DeserializeObject<List<string>>(AreaIDs);
 
-                // User Name Already Exsit
-                var userName = _userManger.FindByNameAsync(model.Email).Result;
-                if (userName != null)
-                {
-                    Message = "UserName Already Exsit.Please Enter Another UserName";
-                    Status = false;
-                    return Json(new { status = Status, message = Message });
-                }
+                //List Of CusineIds
+                List<string> ListOfCusineIds = JsonConvert.DeserializeObject<List<string>>(CusineIds);
 
-                //User Email Already Exsit
-                var userEmail = _userManger.FindByEmailAsync(model.Email).Result;
-                if (userEmail != null)
-                {
-                    Message = "This Email is Already Exsit.Please Enter Another Email";
-                    Status = false;
-                    return Json(new { status = Status, message = Message });
-                }
-
-
-                #endregion
-
-                #region Create File Path 
-
-                string contentPath = this.Environment.ContentRootPath;
-                string path = Path.Combine(contentPath, "Uploads");
-                if (!Directory.Exists(path))
-                {
-                    Directory.CreateDirectory(path);
-                }
-                string UniqueFileName = "";
-                string fileName = Path.GetFileName(upload.FileName);
-                UniqueFileName = Guid.NewGuid() + "_" + fileName;
-
-                #endregion
-
-
-
-
-                // User
-                var user = new AppUser();
-                user.FirstName = model.FirstName;
-                user.Created = DateTime.Now;
-                user.LastName = model.LastName;
-                user.Email = model.Email;
-                user.UserName = model.Email;
-                user.PhoneNumber = model.PhoneNumber;
-
-                // Add User In Database 
-                var result = _userManger.CreateAsync(user, model.Password).Result;
-                if (result.Succeeded)
+                if (ModelState.IsValid)
                 {
 
-                    using (FileStream stream = new FileStream(Path.Combine(path, UniqueFileName), FileMode.Create))
+                    #region Check User Exist 
+
+                    // User Name Already Exsit
+                    var userName = _userManger.FindByNameAsync(model.Email).Result;
+                    if (userName != null)
                     {
-                        UniqueFileName = Guid.NewGuid() + "_" + fileName;
-                        upload.CopyTo(stream);
-                       // ViewBag.Message += string.Format("<b>{0}</b> uploaded.<br />", fileName);
+                        Message = "UserName Already Exsit.Please Enter Another UserName";
+                        Status = false;
+                        return Json(new { status = Status, message = Message });
+                    }
+
+                    //User Email Already Exsit
+                    var userEmail = _userManger.FindByEmailAsync(model.Email).Result;
+                    if (userEmail != null)
+                    {
+                        Message = "This Email is Already Exsit.Please Enter Another Email";
+                        Status = false;
+                        return Json(new { status = Status, message = Message });
                     }
 
 
+                    #endregion
 
+                    // User
+                    var user = new AppUser();
+                    user.FirstName = model.FirstName;
+                    user.Created = DateTime.Now;
+                    user.LastName = model.LastName;
+                    user.Email = model.Email;
+                    user.UserName = model.Email;
+                    user.PhoneNumber = model.PhoneNumber;
+                    user.EmailConfirmed = true;
+                    user.LockoutEnabled = false;
 
-                    //Adding Vendor Information 
-                    Vendor vendor = new Vendor();
-
-                    #region Add other Category 
-                    Category category = new Category();
-                    if (model.OtherCatregory != null)
+                    // Add User In Database 
+                    var result = _userManger.CreateAsync(user, model.Password).Result;
+                    if (result.Succeeded)
                     {
 
-                        //Check If Other Area Already Exist 
-                        if (!_listOfAll.CheckAlreadyExistCategory(model.OtherCatregory))
+                        string UniqueFileName = "";
+                        try
                         {
-                            // Save Other Area
-                            category.Name = model.OtherCatregory;
-                            _efRepository.Add(category);
-                            //Adding Cusine With vendor 
-                            if (_efRepository.SaveChanges())
+                            #region Create File Path 
+                            
+                            var datetime = DateTime.Now;
+                            UniqueFileName = datetime.Month + datetime.Day + datetime.Hour + datetime.Minute + datetime.Ticks + "-" + upload.FileName;
+                            var path = Directory.GetCurrentDirectory() + "/wwwroot/Uploads/";
+                            var filemodel = System.IO.Path.Combine(path, UniqueFileName);
+                            //Store file in Directory Folder 
+                            using (var stream1 = new FileStream(filemodel, FileMode.Create)) 
                             {
-                                vendor.CategoryId = category.Id;
+                                upload.CopyToAsync(stream1).Wait();
                             }
-
+                            #endregion
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            Status = false;
-                            Message = "Other Category Already Exist Please Use an Other One ";
+                            return Json(new { status = Status, message = ex.Message });
+                        }
 
-                            //Delete User
-                            var userdelete = _userManger.DeleteAsync(user).Result;
-                            if (userdelete.Succeeded)
+                       
+
+
+
+
+
+                        //Adding Vendor Information 
+                        Vendor vendor = new Vendor();
+
+                        #region Add other Category 
+                        Category category = new Category();
+                        if (model.OtherCatregory != null)
+                        {
+                            //Check If Other Area Already Exist 
+                            if (!_listOfAll.CheckAlreadyExistCategory(model.OtherCatregory))
                             {
+                                // Save Other Area
+                                category.Name = model.OtherCatregory;
+                                _efRepository.Add(category);
+                                //Adding Cusine With vendor 
+                                if (_efRepository.SaveChanges())
+                                {
+                                    vendor.CategoryId = category.Id;
+                                }
+
+                            }
+                            else
+                            {
+                                Status = false;
+                                Message = "Other Category Already Exist Please Use an Other One ";
+
+                                //Delete User
+                                var userdelete = _userManger.DeleteAsync(user).Result;
+                                if (userdelete.Succeeded)
+                                {
+                                    return Json(new { status = Status, message = Message });
+                                }
+                            }
+                        }
+                        #endregion
+
+                        if (model.OtherCatregory == null)
+                        {
+                            vendor.CategoryId = model.CategoryId;
+                        }
+                        vendor.NumberOfLocation = model.NunberOfLocationName;
+                        vendor.StoreName = model.StoreName;
+                        vendor.Website_Url = model.Website_Url;
+                        vendor.UniqueFileName = UniqueFileName;
+                        vendor.UserId = user.Id;
+                        vendor.Address_Location = model.Address;
+                        _efRepository.Add(vendor);
+                        _efRepository.SaveChanges();
+
+                        #region Adding Other Area 
+
+                        Area area = null;
+                        if (model.OtherArea != null)
+                        {
+                            area = new Area();
+                            //Check If Other Area Already Exist 
+                            if (!_listOfAll.CheckAlreadyExistArea(model.OtherArea))
+                            {
+                                // Save Other Area
+                                area.AreaName = model.OtherArea;
+                                _efRepository.Add(area);
+                                VendorWithArea driverWithArea = null;
+                                if (_efRepository.SaveChanges())
+                                {
+                                    driverWithArea = new VendorWithArea();
+                                    driverWithArea.AreaId = area.Id;
+                                    driverWithArea.VendorId = vendor.Id;
+                                    _efRepository.Add(driverWithArea);
+                                    var resul = _efRepository.SaveChanges();
+                                }
+
+                            }
+                            else
+                            {
+                                Status = false;
+                                Message = "Other Area Already Exist Please Use an Other One ";
+
+                                //Delete User
+                                var userDelete = _userManger.DeleteAsync(user).Result;
+                                if (userDelete.Succeeded)
+                                {
+                                    //Delete Driver 
+                                    _efRepository.Delete(vendor);
+
+                                    _efRepository.SaveChanges();
+                                }
                                 return Json(new { status = Status, message = Message });
                             }
                         }
-                    }
-                    #endregion
 
-                    if (model.OtherCatregory == null)
-                    {
-                        vendor.CategoryId = model.CategoryId;
-                    }
-                    vendor.NumberOfLocation = model.NunberOfLocationName;
-                    vendor.StoreName = model.StoreName;
-                    vendor.Website_Url = model.Website_Url;
-                    vendor.UniqueFileName = UniqueFileName;
-                    vendor.UserId = user.Id;
-                    vendor.Address_Location = model.Address;
-                    _efRepository.Add(vendor);
-                    _efRepository.SaveChanges();
+                        #endregion
 
-                    #region Adding Other Area 
-
-                    Area area = null;
-                    if (model.OtherArea != null)
-                    {
-                         area= new Area();
-                        //Check If Other Area Already Exist 
-                        if (!_listOfAll.CheckAlreadyExistArea(model.OtherArea))
+                        #region Adding Other Cusine 
+                        Cuisine cuisine = new Cuisine();
+                        if (model.OtherCusine != null)
                         {
-                            // Save Other Area
-                            area.AreaName = model.OtherArea;
-                            _efRepository.Add(area);
-                            VendorWithArea driverWithArea = null;
-                            if (_efRepository.SaveChanges())
+
+                            //Check If Other Area Already Exist 
+                            if (!_listOfAll.CheckAlreadyExistCusine(model.OtherCusine))
                             {
-                                driverWithArea = new VendorWithArea();
-                                driverWithArea.AreaId = area.Id;
+                                // Save Other Area
+                                cuisine.Name = model.OtherCusine;
+                                _efRepository.Add(cuisine);
+                                VendorWithCuisine vendorwithCusine = null;
+
+                                //Adding Cusine With vendor 
+                                if (_efRepository.SaveChanges())
+                                {
+                                    vendorwithCusine = new VendorWithCuisine();
+                                    vendorwithCusine.CuisineId = cuisine.Id;
+                                    vendorwithCusine.VendorId = vendor.Id;
+                                    _efRepository.Add(vendorwithCusine);
+                                    var resul = _efRepository.SaveChanges();
+                                }
+
+                            }
+                            else
+                            {
+                                Status = false;
+                                Message = "Other Cusine Already Exist Please Use an Other One ";
+
+                                //Delete User
+                                var userdelete = _userManger.DeleteAsync(user).Result;
+                                if (userdelete.Succeeded)
+                                {
+                                    //Delete Area
+                                    if (area != null)
+                                    {
+                                        _efRepository.Delete(area);
+                                        //Delete Vendor With Area 
+                                        var vendorarea = _listOfAll.GetVendorWithAreaById(area.Id);
+                                        _efRepository.Delete(vendorarea);
+                                    }
+
+                                    //Delete Driver 
+                                    _efRepository.Delete(vendor);
+
+                                    _efRepository.SaveChanges();
+                                }
+                                return Json(new { status = Status, message = Message });
+                            }
+                        }
+                        #endregion
+
+
+
+
+                        #region Adding List Of Area and Cusine 
+                        // Save Multipale Area
+                        if (ListOfArea.Count() > 0)
+                        {
+                            foreach (var item in ListOfArea)
+                            {
+                                VendorWithArea driverWithArea = new VendorWithArea();
+                                driverWithArea.AreaId = Convert.ToInt32(item);
                                 driverWithArea.VendorId = vendor.Id;
                                 _efRepository.Add(driverWithArea);
                                 var resul = _efRepository.SaveChanges();
                             }
-
-                        }
-                        else
-                        {
-                            Status = false;
-                            Message = "Other Area Already Exist Please Use an Other One ";
-
-                            //Delete User
-                            var userDelete= _userManger.DeleteAsync(user).Result;
-                            if (userDelete.Succeeded)
-                            {
-                                //Delete Driver 
-                                _efRepository.Delete(vendor);
-
-                                _efRepository.SaveChanges();
-                            }
-                            return Json(new { status = Status, message = Message });
                         }
 
-
-
-                    }
-
-                    #endregion
-
-                    #region Adding Other Cusine 
-                    Cuisine cuisine = new Cuisine();
-                    if (model.OtherCusine != null)
-                    {
-
-                        //Check If Other Area Already Exist 
-                        if (!_listOfAll.CheckAlreadyExistCusine(model.OtherCusine))
+                        // Save Multipale Cusine 
+                        if (ListOfCusineIds.Count() > 0)
                         {
-                            // Save Other Area
-                            cuisine.Name = model.OtherCusine;
-                            _efRepository.Add(cuisine);
-                            VendorWithCuisine vendorwithCusine = null;
-
-                            //Adding Cusine With vendor 
-                            if (_efRepository.SaveChanges())
+                            foreach (var item in ListOfCusineIds)
                             {
-                                vendorwithCusine = new VendorWithCuisine();
-                                vendorwithCusine.CuisineId = cuisine.Id;
-                                vendorwithCusine.VendorId = vendor.Id;
-                                _efRepository.Add(vendorwithCusine);
+                                VendorWithCuisine cusineWithArea = new VendorWithCuisine();
+                                cusineWithArea.CuisineId = Convert.ToInt32(item);
+                                cusineWithArea.VendorId = vendor.Id;
+                                _efRepository.Add(cusineWithArea);
                                 var resul = _efRepository.SaveChanges();
                             }
-
                         }
-                        else
-                        {
-                            Status = false;
-                            Message = "Other Cusine Already Exist Please Use an Other One ";
 
-                            //Delete User
-                            var userdelete =  _userManger.DeleteAsync(user).Result;
-                            if (userdelete.Succeeded)
-                            {
-                                //Delete Area
-                                if (area!=null)
-                                {
-                                    _efRepository.Delete(area);
-                                    //Delete Vendor With Area 
-                                    var vendorarea = _listOfAll.GetVendorWithAreaById(area.Id);
-                                    _efRepository.Delete(vendorarea);
-                                }
+                        #endregion
 
-                                //Delete Driver 
-                                _efRepository.Delete(vendor);
+                        //Add Role
+                        AddRole("Vendor", user);
 
-                                _efRepository.SaveChanges();
-                            }
-                            return Json(new { status = Status, message = Message });
-                        }
+                        //Send Email Confirmation
+                        //SendEmailConformationLink(user);
+
+                        Status = true;
+                        Message = "Successfully Created Your Account";
+
+                        // Redirect To SignInPage
+                        return Json(new { status = Status, message = Message });
+
                     }
-                    #endregion
-
-
-
-
-                    #region Adding List Of Area and Cusine 
-                    // Save Multipale Area
-                    if (ListOfArea.Count() > 0)
+                    else
                     {
-                        foreach (var item in ListOfArea)
-                        {
-                            VendorWithArea driverWithArea = new VendorWithArea();
-                            driverWithArea.AreaId = Convert.ToInt32(item);
-                            driverWithArea.VendorId = vendor.Id;
-                            _efRepository.Add(driverWithArea);
-                            var resul = _efRepository.SaveChanges();
-                        }
+                        Status = false;
+                        Message = "Error While Creating Your Account";
+                        return Json(new { status = Status, message = Message });
                     }
-
-                    // Save Multipale Cusine 
-                    if (ListOfCusineIds.Count() > 0)
-                    {
-                        foreach (var item in ListOfCusineIds)
-                        {
-                            VendorWithCuisine cusineWithArea = new VendorWithCuisine();
-                            cusineWithArea.CuisineId = Convert.ToInt32(item);
-                            cusineWithArea.VendorId = vendor.Id;
-                            _efRepository.Add(cusineWithArea);
-                            var resul = _efRepository.SaveChanges();
-                        }
-                    }
-
-
-
-
-
-
-                    #endregion
-
-                    //Add Role
-                    AddRole("Vendor", user);
-
-                    //Send Email Confirmation
-                    //SendEmailConformationLink(user);
-
-                    Status = true;
-                    Message = "Successfully Created Your Account";
-
-                    // Redirect To SignInPage
-                    return Json(new { status = Status, message = Message });
-
                 }
-                else
-                {
-                    Status = false;
-                    Message = "Error While Creating Your Account";
-                    return Json(new { status = Status, message = Message });
-                }
+
+                Message = "Provide all required and valid data to proceed";
+                return Json(new { status = Status, message = Message });
+
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new { status = Status, message = ex.StackTrace });
             }
 
-            Message = "Provide all required and valid data to proceed";
-            return Json(new { status = Status, message = Message });
+        
         }
         #endregion
         public void SendEmailConformationLink(AppUser user)
@@ -562,6 +571,8 @@ namespace FoodDelivery.Controllers
                 user.Email = model.Email;
                 user.UserName = model.Email;
                 user.PhoneNumber = model.PhoneNumber;
+                user.EmailConfirmed = true;
+                user.LockoutEnabled = false;
 
                 // Add User In Database 
                 var result = _userManger.CreateAsync(user, model.Password).Result;
@@ -630,7 +641,8 @@ namespace FoodDelivery.Controllers
                 user.Email = model.Email;
                 user.UserName = model.Email;
                 user.PhoneNumber = model.PhoneNumber;
-
+                user.EmailConfirmed = true;
+                user.LockoutEnabled = false;
 
 
                 // Add User In Database 
