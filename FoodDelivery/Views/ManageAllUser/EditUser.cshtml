@@ -1,12 +1,13 @@
-﻿@model SignUpUserVM
+﻿@model EditUserVM
 @{
     Layout = null;
 }
-<div class="container mt-3 mb-4">
+<div class="container">
     <div class="col-12">
-        <div class="custom_css_for_form user_form">
-            <h3 class="text-center mb-5">Sign up as customer</h3>
-            <form asp-action="SignUpUser" method="post" id="FormCreate">
+        <div class="user_form">
+            <h3 class="text-center">Sign up as customer</h3>
+            <form asp-action="EditUser" method="post" id="FormCreate">
+                @Html.HiddenFor(x => x.Id)
                 <div class="form-row ">
                     <div class="col">
                         <label>First Name</label> <span style="color:red">*</span>
@@ -29,7 +30,7 @@
                     <input type="text" class="form-control" asp-for="PhoneNumber" aria-describedby="emailHelp" placeholder="Enter Phone Number">
                     <span asp-validation-for="PhoneNumber" class="text-danger small text-uppercase"></span>
                 </div>
-                <div class="form-row ">
+                @*<div class="form-row ">
                     <div class="col">
                         <label asp-for="Password"></label> <span style="color:red">*</span>
                         <input type="password" asp-for="Password" class="form-control" placeholder="Enter Password">
@@ -40,15 +41,15 @@
                         <input type="password" asp-for="ConfirmPassword" class="form-control" placeholder="Enter Confirm Password">
                         <span asp-validation-for="ConfirmPassword" class="text-danger small text-uppercase"></span>
                     </div>
-                </div>
+                </div>*@
 
                 <div class="row mt-2">
                     <div class="col-12">
 
                     </div>
-                    <div class="col-12">
+                    <div class="col-12 custom_css_for_">
                         <button type="submit" class="btn">Submit</button>
-                        <a href="/Account/HandleSignUp" class="float-right" id="btnNext">Back</a>
+                        @*<a href="/Account/HandleSignUp" class="float-right" id="btnNext">Back</a>*@
                     </div>
                 </div>
             </form>
@@ -68,10 +69,12 @@
             data: frm.serialize(),
             success: function (response) {
                 if (response.status == true) {
-                    bootbox.alert({ message: response.message, size: 'small' });
+                    swal("God Job!", response.message, "success");
+                     window.location.reload();
 
                 } else {
-                     bootbox.alert({ message: response.message, size: 'small' });
+                      swal("Error!", response.message, "error");
+                     //window.location.reload();
                 }
             },
             error: function () {

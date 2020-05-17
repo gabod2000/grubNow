@@ -1,14 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using DataAccessLayer;
 using DataAccessLayer.InterfacesRepository;
 using FoodDelivery.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 using Models;
 
 namespace FoodDelivery.Controllers
@@ -111,19 +112,15 @@ namespace FoodDelivery.Controllers
         }
 
 
-
-
-
         [HttpGet]
         public IActionResult EditVendor(string id)
         {
-            SignUpVendorVM vendorVM = null;
+            EditVendorVM vendorVM = null;
             var user= _userManger.FindByIdAsync(id).Result;
             if (user!=null)
             {
                 
-                
-                vendorVM= new SignUpVendorVM();
+                vendorVM= new EditVendorVM();
                 vendorVM.Id = user.Id;
                 vendorVM.FirstName = user.FirstName;
                 vendorVM.LastName = user.LastName;
@@ -137,26 +134,25 @@ namespace FoodDelivery.Controllers
                     vendorVM.CategoryId = vendor.Category.Id;
                     vendorVM.StoreName = vendor.StoreName;
                     vendorVM.Website_Url = vendor.Website_Url;
-                    vendorVM.Address = vendor.NumberOfLocation;
+                    vendorVM.Address = vendor.Address_Location;
+                    vendorVM.NunberOfLocationName = vendor.NumberOfLocation;
                 }
 
-
-
-                vendorVM.Area = _listOfAll.GetArea()?.Select(p => new SelectListItem()
-                {
-                    Text = p.AreaName,
-                    Value = p.Id.ToString()
-                }).ToList();
+                //vendorVM.Area = _listOfAll.GetArea()?.Select(p => new SelectListItem()
+                //{
+                //    Text = p.AreaName,
+                //    Value = p.Id.ToString()
+                //}).ToList();
                 vendorVM.Category = _listOfAll.GetCategory()?.Select(p => new SelectListItem()
                 {
                     Text = p.Name,
                     Value = p.Id.ToString()
                 }).ToList();
-                vendorVM.Cuisine = _listOfAll.GetCuisine()?.Select(p => new SelectListItem()
-                {
-                    Text = p.Name,
-                    Value = p.Id.ToString()
-                }).ToList();
+                //vendorVM.Cuisine = _listOfAll.GetCuisine()?.Select(p => new SelectListItem()
+                //{
+                //    Text = p.Name,
+                //    Value = p.Id.ToString()
+                //}).ToList();
 
                 vendorVM.NunberOfLocation = new List<SelectListItem>()
                 {
@@ -170,37 +166,241 @@ namespace FoodDelivery.Controllers
 
 
         [HttpPost]
-        public IActionResult EditVendor(SignUpVendorVM model)
+        public IActionResult EditVendor(EditVendorVM model,IFormFile upload)
         {
-            return View();
+            string Message = string.Empty;
+            bool Status = false;
+
+            if (ModelState.IsValid)
+            {
+                var userVernder = _userManger.FindByIdAsync(model.Id).Result;
+                if (userVernder != null)
+                {
+                    userVernder.Id = model.Id;
+                    userVernder.FirstName = model.FirstName;
+                    userVernder.LastName = model.LastName;
+                    userVernder.PhoneNumber = model.PhoneNumber;
+                    userVernder.Email = model.Email;
+                    var updateuser=_userManger.UpdateAsync(userVernder).Result;
+                    if (updateuser.Succeeded)
+                    {
+
+                        // Geting Vendor Data
+                        var vendor = _listOfAll.GetVendorByUserId(model.Id);
+                        if (vendor != null)
+                        {
+                            string UniqueFileName = "";
+                            try
+                            {
+                                #region Create File Path 
+
+                                var datetime = DateTime.Now;
+                                UniqueFileName = datetime.Month + datetime.Day + datetime.Hour + datetime.Minute + datetime.Ticks + "-" + upload.FileName;
+                                var path = Directory.GetCurrentDirectory() + "/wwwroot/Uploads/";
+                                var filemodel = System.IO.Path.Combine(path, UniqueFileName);
+                                //Store file in Directory Folder 
+                                using (var stream1 = new FileStream(filemodel, FileMode.Create))
+                                {
+                                    upload.CopyToAsync(stream1).Wait();
+                                }
+                                #endregion
+                            }
+                            catch (Exception ex)
+                            {
+                                return Json(new { status = Status, message = ex.Message });
+                            }
+                            vendor.CategoryId = model.CategoryId;
+                            vendor.StoreName = model.StoreName;
+                            vendor.Website_Url = model.Website_Url;
+                            vendor.UniqueFileName = UniqueFileName;
+                            vendor.Address_Location = model.Address;
+                            _efRepository.Update(vendor);
+                            if (_efRepository.SaveChanges())
+                            {
+                                Message = " Successfully Update Record";
+                                Status = true;
+                            }
+                            else
+                            {
+                                Message = " Error While Updating Record";
+                                Status = true;
+                            }
+                        }
+                    }
+
+                }
+            }
+            else
+            {
+                //model.Area = _listOfAll.GetArea()?.Select(p => new SelectListItem()
+                //{
+                //    Text = p.AreaName,
+                //    Value = p.Id.ToString()
+                //}).ToList();
+                model.Category = _listOfAll.GetCategory()?.Select(p => new SelectListItem()
+                {
+                    Text = p.Name,
+                    Value = p.Id.ToString()
+                }).ToList();
+                //model.Cuisine = _listOfAll.GetCuisine()?.Select(p => new SelectListItem()
+                //{
+                //    Text = p.Name,
+                //    Value = p.Id.ToString()
+                //}).ToList();
+
+                model.NunberOfLocation = new List<SelectListItem>()
+                {
+                    new SelectListItem() { Value = "1 - 4", Text = "1 - 4" },
+                    new SelectListItem() { Value = "4 - 10", Text = "4 - 10" },
+                    new SelectListItem() { Value = "10 - 20", Text = "10 - 20" }
+                };
+            }
+            return Json(new { status = Status, message = Message });
         }
 
 
 
         [HttpGet]
-        public IActionResult EditDriver(string UserId)
+        public IActionResult EditDriver(string id)
         {
-            return View();
+            EditDriverVM model = null;
+            var user = _userManger.FindByIdAsync(id).Result;
+            if (user != null)
+            {
+                model = new EditDriverVM();
+                model.FirstName = user.FirstName;
+                model.LastName = user.LastName;
+                model.Email = user.Email;
+                model.PhoneNumber = user.PhoneNumber;
+                model.Id = user.Id;
+
+                var driver = _listOfAll.GetDriverByUserId(id);
+                if (driver!=null)
+                {
+                    model.Address = driver.Address_Location;
+                }
+                model.Area = _listOfAll.GetArea()?.Select(p => new SelectListItem()
+                {
+                    Text = p.AreaName,
+                    Value = p.Id.ToString()
+                }).ToList();
+            }
+
+            return View(model);
         }
 
 
         [HttpPost]
-        public IActionResult EditDriver(SignUpDriverVM model)
+        public IActionResult EditDriver(EditDriverVM model)
         {
-            return View();
+            string Message = string.Empty;
+            bool Status = false;
+
+            if (ModelState.IsValid)
+            {
+                var userDriver = _userManger.FindByIdAsync(model.Id).Result;
+                if (userDriver != null)
+                {
+                    userDriver.Id = model.Id;
+                    userDriver.FirstName = model.FirstName;
+                    userDriver.LastName = model.LastName;
+                    userDriver.PhoneNumber = model.PhoneNumber;
+                    userDriver.Email = model.Email;
+                    var user=  _userManger.UpdateAsync(userDriver).Result;
+                    if (user.Succeeded)
+                    {
+                        var driver = _listOfAll.GetDriverByUserId(model.Id);
+                        if (driver != null)
+                        {
+                            driver.Address_Location = model.Address;
+                            _efRepository.Update(driver);
+                            if (_efRepository.SaveChanges())
+                            {
+                                Message = " Successfully Update Record";
+                                Status = true;
+                            }
+                            else
+                            {
+                                Message = " Error While Updating Record";
+                                Status = true;
+                            }
+                        }
+                    }
+                   
+                }
+                else
+                {
+
+                    model.Area = _listOfAll.GetArea()?.Select(p => new SelectListItem()
+                    {
+                        Text = p.AreaName,
+                        Value = p.Id.ToString()
+                    }).ToList();
+                }
+
+            }
+            else
+            {
+
+                model.Area = _listOfAll.GetArea()?.Select(p => new SelectListItem()
+                {
+                    Text = p.AreaName,
+                    Value = p.Id.ToString()
+                }).ToList();
+            }
+            return Json(new { status = Status, message = Message });
         }
 
         [HttpGet]
-        public IActionResult EditUser(string UserId)
+        public IActionResult EditUser(string id)
         {
-            return View();
+            EditUserVM model = null;
+            var user = _userManger.FindByIdAsync(id).Result;
+            if (user != null)
+            {
+                model = new EditUserVM();
+                model.FirstName = user.FirstName;
+                model.LastName = user.LastName;
+                model.Email = user.Email;
+                model.PhoneNumber = user.PhoneNumber;
+                model.Id = user.Id;
+            } 
+            return View(model);
         }
 
 
         [HttpPost]
-        public IActionResult EditUser(SignUpUserVM model)
+        public IActionResult EditUser(EditUserVM model)
         {
-            return View();
+
+            string Message = string.Empty;
+            bool Status = false;
+
+            if (ModelState.IsValid)
+            {
+                var userDriver = _userManger.FindByIdAsync(model.Id).Result;
+                if (userDriver != null)
+                {
+                    userDriver.Id = model.Id;
+                    userDriver.FirstName = model.FirstName;
+                    userDriver.LastName = model.LastName;
+                    userDriver.PhoneNumber = model.PhoneNumber;
+                    userDriver.Email = model.Email;
+                    var user=  _userManger.UpdateAsync(userDriver).Result;
+                    if (user.Succeeded)
+                    {
+                        Message = " Successfully Update Record";
+                        Status = true;
+                    }
+                    else
+                    {
+                        Message = " Error While Updating Record";
+                        Status = true;
+                    }
+
+                }
+            }
+            return Json(new { status = Status, message = Message });
         }
 
 

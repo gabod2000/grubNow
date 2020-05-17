@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Text.Encodings.Web;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Threading.Tasks;
+using FoodDelivery.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -18,12 +16,14 @@ namespace FoodDelivery.Areas.Identity.Pages.Account
     public class ForgotPasswordModel : PageModel
     {
         private readonly UserManager<AppUser> _userManager;
-        private readonly IEmailSender _emailSender;
+        //private readonly IEmailSender _emailSender;
 
-        public ForgotPasswordModel(UserManager<AppUser> userManager, IEmailSender emailSender)
+        public ForgotPasswordModel(UserManager<AppUser> userManager
+            //IEmailSender emailSender
+            )
         {
             _userManager = userManager;
-            _emailSender = emailSender;
+          //  _emailSender = emailSender;
         }
 
         [BindProperty]
@@ -57,10 +57,19 @@ namespace FoodDelivery.Areas.Identity.Pages.Account
                     values: new { area = "Identity", code },
                     protocol: Request.Scheme);
 
-                await _emailSender.SendEmailAsync(
-                    Input.Email,
-                    "Reset Password",
-                    $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                //await _emailSender.SendEmailAsync(
+                //    Input.Email,
+                //    "Reset Password",
+                //    $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+
+                EmailSender sndEmail = new EmailSender("smtp.gmail.com", 587, true, "nadeem.sa.2582@gmail.com", "03461578803");
+
+                string message = "Hello User.<br/> Welcome to FoodDelivery. " + "<br/>" + " You can " + "<a href=" + callbackUrl + ">Click Here</a>" + " to change your password. <br/> Thanks.";
+
+
+                await sndEmail.SendEmailAsync(user.Email, "Email Confirmation", message);
+
+
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }
