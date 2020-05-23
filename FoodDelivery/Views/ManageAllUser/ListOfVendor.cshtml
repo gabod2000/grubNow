@@ -2,12 +2,12 @@
 @model IEnumerable<SignUpVendorVM>
 
 @{
-    Layout = "_LayoutPublic";
+    Layout = "~/Views/Shared/_LayoutPublicForTab.cshtml";
 }
 
 @foreach (var course in Model)
 {
-    <div class="card mb-4">
+    <div class="card mb-4" style="z-index:-1">
         <div class="card-body">
             <h2>Vendor</h2>
             <div class="row">
@@ -37,7 +37,7 @@
 
 
 <script>
-        $(".header_text_div").addClass("d-none");
+        //$(".header_text_div").addClass("d-none");
         $('#CheckBoxConfirm').click(function () {
             if ($(this).prop("checked") == true) {
                 $("#btnNext").removeClass("isDisabled");

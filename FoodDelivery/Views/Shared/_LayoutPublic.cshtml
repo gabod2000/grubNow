@@ -45,7 +45,7 @@
             <div class="col-lg-6 col-mad-12 col-12">
                 <div class="row">
                     <div class="col-12 text-center">
-                        <h2>Your favorite foods delivered to your door</h2>
+                        <h2 id="Main_Heading">Your favorite foods delivered to your door</h2>
                     </div>
                     <div class="col-12">
                         <p class="text-center">Enter your delivery address, browse menus from the best restaurants in your neighborhood, and order delivery from the places that are open now, near you. You want it? We get it.</p>
@@ -59,10 +59,9 @@
                                         <div class="input-group-prepend">
                                             <div class="input-group-text"><i class="fas fa-map-marker-alt"></i></div>
                                         </div>
-                                        <input type="text" class="form-control input_dr" id="searchmap" placeholder="Enter your address...">
-
+                                        <input type="text" class="form-control input_dr" id="SearchArea" placeholder="Enter your address...">
                                         <div class="input-group-prepend sub_button">
-                                            <div class="input-group-text"><a href="#"><i class="fas fa-chevron-right"></i></a></div>
+                                            <div class="input-group-text"><a href="#" id="SearchButton"><i class="fas fa-chevron-right"></i></a></div>
                                         </div>
                                         <div class="delivery">
                                             <button class="btn" href="#">DELIVERY</button>
@@ -130,22 +129,22 @@
                     </h5>
                     <ul class="list-unstyled text-left">
                         <li>
-                            <a href="#!" class="css-kbnj0e">Sell on grubNow</a>
+                            <a href="/Account/HandleSignUp?signUpAs=Vendor" class="css-kbnj0e">Sell on grubNow</a>
                         </li>
                         <li>
-                            <a href="#!" class="css-kbnj0e">Restaurants</a>
+                            <a href="/Restaurant/List" class="css-kbnj0e">Restaurants</a>
                         </li>
                         <li>
                             <a href="#!" class="css-kbnj1e"><b>FLEET</b></a>
                         </li>
+                        @*<li>
+                                <a href="/ManageAllUser/ListOfDriverShowCustomer" class="css-kbnj0e">Driver</a>
+                            </li>
+                            <li>
+                                <a href="/ManageAllUser/ListOfVendor" class="css-kbnj0e">Vendor</a>
+                            </li>*@
                         <li>
-                            <a href="/ManageAllUser/ListOfDriverShowCustomer" class="css-kbnj0e">Driver</a>
-                        </li>
-                        <li>
-                            <a href="/ManageAllUser/ListOfVendor" class="css-kbnj0e">Vendor</a>
-                        </li>
-                        <li>
-                            <a href="#!" class="css-kbnj0e">Join the Fleet</a>
+                            <a href="/Account/HandleSignUp?signUpAs=Driver" class="css-kbnj0e">Join the Fleet</a>
                         </li>
                         <li>
                             <a href="#!" class="css-kbnj1e"><b>SUPPORT</b></a>
@@ -214,7 +213,7 @@
         <div class="container delivery_location">
             <div class="row border-top pb-4">
                 <div class="col-12 pt-4 css-1w4k9rf">
-                    <h3>Our TOP CITIES</h3>
+                    <h3>Our Top Locations</h3>
                 </div>
             </div>
             @await Component.InvokeAsync("AreaList")
@@ -258,19 +257,38 @@
         </div>
     </div>
     <!-- ========== model login ============ -->
-
     @*<script async defer
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARsmUBbNRtRKdc2oUNjfd69jYeuxdoyeE&callback=initMap">
-    </script>*@
+                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARsmUBbNRtRKdc2oUNjfd69jYeuxdoyeE&callback=initMap">
+        </script>*@
 
     @*<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARsmUBbNRtRKdc2oUNjfd69jYeuxdoyeE&libraries=places&callback=initAutocomplete"
-            async defer></script>*@
-
+        async defer></script>*@
+    <script src="~/js/jquery.min.js"></script>
     <script src="~/js/GeLocation.js"></script>
-
+    <script src="~/lib/jquery-ui/jquery-ui.js"></script>
+    <link href="~/lib/jquery-ui/themes/blitzer/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/lib/jquery-ui/jquery-ui.min.js"></script>
     <script>
 
         $(document).ready(function () {
+
+            //-----------------------------------------------------------------------------
+            // AutoComplete Text Box Search
+            $('#SearchArea').autocomplete({
+                source: "Home/GetSearchValue/"
+            });
+
+
+            //Btn
+            $("#SearchButton").on("click", function () {
+                debugger
+                var area = $("#SearchArea").val();
+                window.location.href = "/Restaurant/ListResturentByArea/" + "?Area=" + area;
+            });
+
+
+
+
             $(".input_dr").focus(function () {
                 $(".current_location").show();
                 $(".delivery").show();

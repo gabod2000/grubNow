@@ -4,16 +4,22 @@
     Layout = null;
 }
 
+<style>
+    .AreaName a {
+        text-decoration: none;
+        color: white;
+    }
+</style>
+
+
     <div class="row mt-3">
         @foreach (var course in Model)
         {
             if (course.Name != "Other")
             {
-                <div class="col-lg-3 col-md-4 col-6 mb-2">
-
-                    <b class="text-left">@course.Name</b>
+                <div class="col-lg-3 col-md-4 col-6 mb-4 AreaName">
+                    <a href="#" class="text-left">@course.Name</a>
                 </div>
-
             }
         }
     </div>

@@ -12,7 +12,7 @@
             </div>
         </div>
 
-        @await Component.InvokeAsync("AreaList")
+        @await Component.InvokeAsync("AreaListNear")
 
     </div>
     <!-- ======= body ========= -->
@@ -58,6 +58,12 @@
                 $(".current_location").show();
             });
         });
+
+
+        $("#Main_Heading").text("Delivery Near Me");
+
+
+
     </script>
 </body>
 

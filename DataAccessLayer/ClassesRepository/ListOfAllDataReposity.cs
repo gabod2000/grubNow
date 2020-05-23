@@ -31,6 +31,13 @@ namespace DataAccessLayer.ClassesRepository
         }
 
 
+        public Area GetAreaByName(string Area)
+        {
+            return _context.Areas.Include(x=>x.VendorWithAreas)
+                          .FirstOrDefault(p => p.AreaName == Area);
+        }
+
+
         /// <summary>
         /// Get All Category 
         /// </summary>
@@ -222,7 +229,16 @@ namespace DataAccessLayer.ClassesRepository
             return _context.OtherLocations.Where(x => x.VendorID == VendorID).ToList();
         }
 
-       
+        /// <summary>
+        /// Get Vendor By Id
+        /// </summary>
+        /// <param name="Id"></param>
+        /// <returns></returns>
+        public Vendor GetVendorById(int Id)
+        {
+            return _context.Vendors.Include(x => x.Category)
+                          .FirstOrDefault(p => p.Id == Id);
+        }
     }
 
 

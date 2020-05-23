@@ -1,6 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Threading.Tasks;
+using FoodDelivery.ErrorLog;
 using FoodDelivery.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -62,16 +64,24 @@ namespace FoodDelivery.Areas.Identity.Pages.Account
                 //    "Reset Password",
                 //    $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-                EmailSender sndEmail = new EmailSender("smtp.gmail.com", 587, true, "nadeem.sa.2582@gmail.com", "03461578803");
 
-                string message = "Hello User.<br/> Welcome to FoodDelivery. " + "<br/>" + " You can " + "<a href=" + callbackUrl + ">Click Here</a>" + " to change your password. <br/> Thanks.";
+                try
+                {
+                    EmailSender sndEmail = new EmailSender("smtp.gmail.com", 587, true, "nadeem.sa.2582@gmail.com", "03461578803");
 
+                    string message = "Hello User.<br/> Welcome to FoodDelivery. " + "<br/>" + " You can " + "<a href=" + callbackUrl + ">Click Here</a>" + " to change your password. <br/> Thanks.";
 
-                await sndEmail.SendEmailAsync(user.Email, "Email Confirmation", message);
+                    await sndEmail.SendEmailAsync(user.Email, "Email Confirmation", message);
 
+                    return RedirectToPage("./ForgotPasswordConfirmation");
 
-
-                return RedirectToPage("./ForgotPasswordConfirmation");
+                }
+                catch (Exception ex)
+                {
+                    WriteLog.AddLog(ex.Message);
+                    WriteLog.AddLog(ex.StackTrace);
+                    WriteLog.AddLog(ex.InnerException.ToString());
+                }
             }
 
             return Page();

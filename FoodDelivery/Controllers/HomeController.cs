@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Models;
 using System.IO;
 using Microsoft.AspNetCore.Http;
+using DataAccessLayer.InterfacesRepository;
 
 namespace FoodDelivery.Controllers
 {
@@ -19,12 +20,14 @@ namespace FoodDelivery.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly RoleManager<AppRole> _roleManager;
         private readonly UserManager<AppUser> _userManger;
+        private IListOfAllData _listOfAll;
         public HomeController(UserManager<AppUser> userManager,
-            SignInManager<AppUser> signInManager, RoleManager<AppRole> roleManager, ILogger<HomeController> logger)
+            SignInManager<AppUser> signInManager, RoleManager<AppRole> roleManager, ILogger<HomeController> logger, IListOfAllData listOfAll)
         {
             _userManger = userManager;
             _roleManager = roleManager;
             _logger = logger;
+            _listOfAll = listOfAll;
         }
 
         [Authorize]
@@ -37,6 +40,26 @@ namespace FoodDelivery.Controllers
         {
             return View();
         }
+
+        // Search For TextBox For AutoComplete
+        [HttpGet]
+        public async Task<IActionResult> GetSearchValue()
+        {
+            try
+            {
+                string term = HttpContext.Request.Query["term"].ToString();
+                var result = _listOfAll.GetArea()
+                                  .Where(x => x.AreaName.Contains(term))
+                                  .Select(x => x.AreaName).ToList();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
 
         public IActionResult UserProfile()
         {

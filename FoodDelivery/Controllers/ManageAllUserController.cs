@@ -403,7 +403,7 @@ namespace FoodDelivery.Controllers
             return Json(new { status = Status, message = Message });
         }
 
-
+        [AllowAnonymous]
         public IActionResult ListOfVendor()
         {
 
@@ -466,7 +466,7 @@ namespace FoodDelivery.Controllers
             return View(model);
         }
 
-
+        [AllowAnonymous]
         public IActionResult ListOfDriverShowCustomer()
         {
 

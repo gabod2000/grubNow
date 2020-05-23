@@ -7,23 +7,25 @@ namespace DataAccessLayer.InterfacesRepository
     {
         IEnumerable<Area> GetArea();
         Area GetAreaById(int id);
+        Area GetAreaByName(string Area);
         IEnumerable<Cuisine> GetCuisine();
         Cuisine GetCuisineById(int id);
         IEnumerable<Category> GetCategory();
         Category GetCategoryById(int id);
-        public IEnumerable<Vendor> GetVendor();
-        public Vendor GetVendorByUserId(string UserId);
-        public IEnumerable<Driver> GetDriver();
-        public Driver GetDriverByUserId(string UserId);
-        public List<VendorWithCuisine> GetsVendorWithCusineById(int id);
-        public List<VendorWithArea> GetsVendorWithAreaById(int id);
-        public IEnumerable<OtherLocation> GetOtherLocationByVendorID(int VendorID);
-        public List<DriverWithArea> GetsDriverWithAreaById(int id);
-        public bool CheckAlreadyExistArea(string AreaName);
-        public bool CheckAlreadyExistCusine(string CusineName);
-        public bool CheckAlreadyExistCategory(string Category);
-        public VendorWithArea GetVendorWithAreaById(int id);
-        public DriverWithArea GetDriverWithAreaById(int id);
+        IEnumerable<Vendor> GetVendor();
+        Vendor GetVendorById(int Id);
+        Vendor GetVendorByUserId(string UserId);
+        IEnumerable<Driver> GetDriver();
+        Driver GetDriverByUserId(string UserId);
+        List<VendorWithCuisine> GetsVendorWithCusineById(int id);
+        List<VendorWithArea> GetsVendorWithAreaById(int id);
+        IEnumerable<OtherLocation> GetOtherLocationByVendorID(int VendorID);
+        List<DriverWithArea> GetsDriverWithAreaById(int id);
+        bool CheckAlreadyExistArea(string AreaName);
+        bool CheckAlreadyExistCusine(string CusineName);
+        bool CheckAlreadyExistCategory(string Category);
+        VendorWithArea GetVendorWithAreaById(int id);
+        DriverWithArea GetDriverWithAreaById(int id);
 
 
     }
