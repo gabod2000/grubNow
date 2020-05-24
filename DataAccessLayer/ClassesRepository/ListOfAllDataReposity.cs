@@ -180,7 +180,7 @@ namespace DataAccessLayer.ClassesRepository
         /// <returns></returns>
         public IEnumerable<Vendor> GetVendor()
         {
-            return _context.Vendors;
+            return _context.Vendors.Include(x=>x.Category);
         }
 
         /// <summary>

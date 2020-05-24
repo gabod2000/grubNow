@@ -60,6 +60,8 @@ namespace FoodDelivery.Controllers
         public IActionResult ListResturentByArea(string Area)
         {
             var data=  _listOfAll.GetAreaByName(Area);
+
+            ViewBag.AreaName = Area;
             List<ListOfResturantVM> listOfs = new List<ListOfResturantVM>();
             if (data!=null)
             {
@@ -82,6 +84,34 @@ namespace FoodDelivery.Controllers
             
             return View(listOfs);
         }
+
+        public IActionResult ListResturent()
+        {
+            List<ListOfResturantVM> listOfs = new List<ListOfResturantVM>();
+
+            var vendor = _listOfAll.GetVendor();
+            if (vendor != null)
+            {
+                foreach (var item in vendor)
+                {
+                    if (item.Category.Name == "Restaurants")
+                    {
+                        ListOfResturantVM resturantVM = new ListOfResturantVM();
+                        resturantVM.Category = item.Category.Name;
+                        resturantVM.Id = item.Id;
+                        resturantVM.StoreName = item.StoreName;
+                        resturantVM.UniqueFileName = item.UniqueFileName;
+                        resturantVM.Website_Url = item.Website_Url;
+                        resturantVM.Address_Location = item.Address_Location;
+                        listOfs.Add(resturantVM);
+                    }
+                }
+            }
+
+            return View(listOfs);
+        }
+
+
 
     }
 }
