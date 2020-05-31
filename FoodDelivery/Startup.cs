@@ -131,7 +131,8 @@ namespace FoodDelivery
             {
                 endpoints.MapControllerRoute(
                     name: "default",
-                    pattern: "{controller=Home}/{action=PublicSite}/{id?}");
+                    //pattern: "{controller=Home}/{action=PublicSite}/{id?}");
+                    pattern: "{controller=Home}/{action=PublicSiteLandingPage}/{id?}");
 
                 endpoints.MapAreaControllerRoute(
                     name: "areas", "areas",

@@ -1,11 +1,11 @@
 $(document).ready(function () {
     $(window).scroll(function () {
         var height = $(window).scrollTop();
-        if (height > 100) {
-            $('#button').fadeIn();
-        } else {
-            $('#button').hide();
-        }
+        //if (height > 100) {
+        //    $('#button').fadeIn();
+        //} else {
+        //    $('#button').hide();
+        //}
     });
     $("#button").click(function () {
         $('html, body').animate({

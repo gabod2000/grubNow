@@ -1,0 +1,300 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="Description" content="Enter your description here" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/swiper/css/swiper.min.css">
+    <link rel="stylesheet" href="~/LandingPageNew/assets/css/style.css">
+    <title>grubNow</title>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-sm fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="index.html">
+                <img src="~/LandingPageNew/assets/images/logo.jpeg" alt="logo" class="logo">
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#grubNowNavbar">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <div class="collapse navbar-collapse" id="grubNowNavbar">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item text-right">
+                        <a class="nav-link bold" href="/Account/HandleSignUp">Sign Up</a>
+                    </li>
+                    <li class="nav-item text-right">
+                        <a class="nav-link bold" href="/Identity/Account/Login">Login</a>
+                    </li>
+                    <li class="nav-item dropdown text-right">
+                        <a class="nav-link dropdown-toggle no-caret" href="#" data-toggle="dropdown">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </a>
+                        <div class="dropdown-menu to-right">
+                            <a class="dropdown-item" href="#">Action</a>
+                            <a class="dropdown-item" href="#">Another action</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="#">Something else here</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Navbar End -->
+    <!-- Hero Area -->
+    <div class="hero-area">
+        <div class="container-fluid pl-md">
+            <div class="row">
+                <div class="col-lg-6">
+                    <h1 class="text-white bold">Hungry?</h1>
+                    <p class="text-white">Food, drinks, groceries, and more available for delivery and pickup.</p>
+                    <!--  -->
+                    <div class="addressbar mt-5">
+                        <div class="location-icon text-center">
+                            <img src="~/LandingPageNew/assets/images/location-icon-red.png" class="img-fluid">
+                        </div>
+                        <input type="text" id="SearchArea" placeholder="Enter your address...">
+                        <button type="button text-center" id="SearchButton">
+                            <img src="~/LandingPageNew/assets/images/send-icon-red.png">
+                        </button>
+                    </div>
+                    <!--  -->
+                    <div class="location-details mt-1">
+                        <!--  -->
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active bold" data-toggle="tab" href="#delivery">DELIVERY</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link bold" data-toggle="tab" href="#pickup">PICKUP</a>
+                            </li>
+                        </ul>
+                        <!--  -->
+                        <div class="tab-content" id="myTabContent">
+                            <!--  -->
+                            <div class="tab-pane fade show active" id="delivery">
+                                <img src="~/LandingPageNew/assets/images/shift-icon-red.png" class="shift-location-icon">
+                                <span class="bold">Use Current Location</span>
+                            </div>
+                            <!--  -->
+                            <div class="tab-pane fade" id="pickup">
+                                <img src="~/LandingPageNew/assets/images/shift-icon-red.png" class="shift-location-icon">
+                                <span class="bold">Choose Location</span>
+                            </div>
+                            <!--  -->
+                        </div>
+                        <!--  -->
+                    </div>
+                    <!--  -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Hero Area End -->
+
+    @RenderBody()
+
+
+    <!-- Footer -->
+    <footer>
+        <!--  -->
+        <div class="container-fluid">
+            <div class="row">
+                <!--  -->
+                <div class="col-xl-2 mt-3">
+                    <img src="~/LandingPageNew/assets/images/logo.jpeg" alt="logo" class="footer-logo">
+                </div>
+                <!--  -->
+                <div class="col-sm-6 col-md-3 col-xl-3 mt-3">
+                    <div class="links-title text-white bold">gurbnow</div>
+                    <a href="javascript:void" class="text-white q-link">About</a>
+                    <a href="javascript:void" class="text-white q-link">Career</a>
+                    <a href="javascript:void" class="text-white q-link">Blog</a>
+                    <a href="javascript:void" class="text-white q-link">Press & Media</a>
+                    @*<a href="javascript:void" class="text-white q-link">Developers</a>
+                    <a href="javascript:void" class="text-white q-link">API Docs</a>
+                    <a href="javascript:void" class="text-white q-link">Gift Cards</a>
+                    <a href="javascript:void" class="text-white q-link">Pickup</a>*@
+                </div>
+                <!--  -->
+                <div class="col-sm-6 col-md-3 col-xl-3 mt-3">
+                    <div class="links-title text-white bold">MERCHANTS</div>
+                    <a href="/Account/HandleSignUp?signUpAs=Vendor" class="text-white q-link">Sell on grubNow</a>
+                    <a href="/Restaurant/ListResturent" class="text-white q-link">Restaurants</a>
+                    <a href="javascript:void" class="text-white q-link">FLEET</a>
+                    @*<a href="javascript:void" class="text-white q-link">Diver</a>
+                    <a href="javascript:void" class="text-white q-link">Vendor</a>*@
+                    <a href="/Account/HandleSignUp?signUpAs=Driver" class="text-white q-link">Join the Fleet</a>
+                    <a href="javascript:void" class="text-white q-link">SUPPORT</a>
+                    <a href="javascript:void" class="text-white q-link">Customer Help</a>
+                    <a href="javascript:void" class="text-white q-link">Fleet Help</a>
+                    <a href="javascript:void" class="text-white q-link">Merchant Help</a>
+                </div>
+                <!--  -->
+                <div class="col-sm-6 col-md-3 col-xl-2 mt-3">
+                    <div class="links-title text-white bold">MORE</div>
+                    <a href="/Home/DeliveryNearByMe" class="text-white q-link">Delivery Near Me</a>
+                    <a href="javascript:void" class="text-white q-link">Takeout Near Me</a>
+                    <a href="javascript:void" class="text-white q-link">Pizza Near Me</a>
+                    <a href="javascript:void" class="text-white q-link">Thai Near Me!</a>
+                    <a href="javascript:void" class="text-white q-link">Mexican Near Me</a>
+                    <a href="javascript:void" class="text-white q-link">ALcohol Delivery</a>
+                    <a href="javascript:void" class="text-white q-link">FoodFight!</a>
+                </div>
+                <!--  -->
+                <div class="col-sm-6 col-md-3 col-xl-2 mt-3">
+                    <div class="links-title text-white bold">FOLLOW US</div>
+                    <a href="javascript:void" class="text-white q-link">Twitter</a>
+                    <a href="javascript:void" class="text-white q-link">Facebook</a>
+                    <a href="javascript:void" class="text-white q-link">Instagram</a>
+                    <a href="javascript:void" class="text-white q-link">Snapchat</a>
+                </div>
+                <!--  -->
+            </div>
+        </div>
+        <!--  -->
+        <hr style="border-top: 1px solid gray;" class="mt-5 mb-5">
+        <!--  -->
+        <div class="container-fluid">
+            <h3 class="text-white">OUR TOP CITIES</h3>
+            <div class="row mt-5">
+                @await Component.InvokeAsync("AreaList")
+            </div>
+        </div>
+        <!--  -->
+        <hr style="border-top: 1px solid gray;" class="mt-5 mb-5">
+        <div class="mt-5 pt-5"></div>
+        <p class="text-white bold">grubNow is the most reliable on-demand delivery and pickup platform.</p>
+        <p class="text-white">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate, corporis tempora. Unde
+            asperiores assumenda nisi obcaecati? Eligendi nemo illum harum ullam accusantium, similique eaque ut sit
+            fuga. Ut, doloribus qui! Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate, corporis
+            tempora.
+        </p>
+        <div class="text-white mt-4">
+            &copy;2020 grubnow inc
+            &nbsp;&nbsp;
+            <a href="javascript:void" class="text-white">Terms</a>
+            &nbsp;&nbsp;
+            <a href="javascript:void" class="text-white">Privacy</a>
+        </div>
+        <div class="mt-5 pt-5"></div>
+        <div class="text-white text-center">&copy; 2020 Copyright By grubNow</div>
+        <!--  -->
+    </footer>
+    <!-- Footer End -->
+    <!-- ========== model login ============ -->
+    <div class="modal fade" id="GenericModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content border-0">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id="CreateModal"></div>
+                <div class="modal-footer">
+                    @*<a class="btn btn-link text-danger" id="btnSignUp" href="/Account/SignUp">
+                            New user! Do not have an account yet.
+                        </a>*@
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ========== model login ============ -->
+    @*<script async defer
+                src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARsmUBbNRtRKdc2oUNjfd69jYeuxdoyeE&callback=initMap">
+        </script>*@
+
+    @*<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyARsmUBbNRtRKdc2oUNjfd69jYeuxdoyeE&libraries=places&callback=initAutocomplete"
+        async defer></script>*@
+    <script src="~/js/jquery.min.js"></script>
+    <script src="~/js/GeLocation.js"></script>
+
+
+    <!-- JS Files -->
+    @*<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.slim.min.js"></script>*@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.com/swiper/js/swiper.min.js"></script>
+    <script src="~/LandingPageNew/assets/js/script.js"></script>
+
+
+    <script src="~/lib/jquery-ui/jquery-ui.js"></script>
+
+    <link href="~/lib/jquery-ui/themes/blitzer/jquery-ui.min.css" rel="stylesheet" />
+    <script src="~/lib/jquery-ui/jquery-ui.min.js"></script>
+
+    <script>
+
+        $(document).ready(function () {
+
+            //-----------------------------------------------------------------------------
+            // AutoComplete Text Box Search
+            $('#SearchArea').autocomplete({
+                source: "Home/GetSearchValue/"
+            });
+
+
+            //Btn
+            $("#SearchButton").on("click", function () {
+                debugger
+                var area = $("#SearchArea").val();
+                window.location.href = "/Restaurant/ListResturentByArea/" + "?Area=" + area;
+            });
+
+            $(".input_dr").focus(function () {
+                $(".current_location").show();
+                $(".delivery").show();
+            });
+
+            $(window).on('load', function () {
+                $(".input_dr").focus();
+                $(".current_location").show();
+                $(".delivery").show();
+            });
+
+            $('.input_dr').on('click touch', function () {
+                $(".current_location").show();
+                $(".delivery").show();
+            });
+
+            $(document).on('click touch', function (event) {
+                if (!$(event.target).parents().addBack().is('.delivery, .current_location, .input_dr')) {
+                    $('.current_location').hide();
+                    $('.delivery').hide();
+                }
+            });
+
+
+            //For Footer Text Box
+            $(".input_dr1").focus(function () {
+                $(".current_location1").show();
+                $(".delivery1").show();
+            });
+
+            $('.input_dr1').on('click touch', function () {
+                $(".current_location1").show();
+                $(".delivery1").show();
+            });
+
+            $(document).on('click touch', function (event) {
+                if (!$(event.target).parents().addBack().is('.delivery1, .current_location1, .input_dr1')) {
+                    $('.current_location1').hide();
+                    $('.delivery1').hide();
+                }
+            });
+        });
+    </script>
+    @RenderSection("Scripts", required: false)
+    @*<script src="~/js/GoogleMapLocation.js"></script>*@
+</body>
+</html>
+
+

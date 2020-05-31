@@ -20,7 +20,9 @@
     <div class="container-fluid p-0 back_color_main">
         <div class="container">
             <nav class="navbar navbar-expand-lg">
-                <a class="navbar-brand logo" href="/Home/PublicSite">grubNow</a>
+                <a class="navbar-brand logo" href="/Home/PublicSite">
+                    <img src="~/Logo/Logo.png" height="80" width="200"/>
+                </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <i class="fas fa-bars" style="color: #fff;"></i>
                 </button>
@@ -31,9 +33,9 @@
                         </li>
                     </ul>
                     @*<form class="form-inline ">
-                        <a  class="btn" href="/ManageAllUser/ListOfDriverShowCustomer" id="btnDriver">Driver</a>
-                        <a class="btn" href="/ManageAllUser/ListOfVendor" id="btnVendor">Vendor</a>
-                    </form>*@
+                            <a  class="btn" href="/ManageAllUser/ListOfDriverShowCustomer" id="btnDriver">Driver</a>
+                            <a class="btn" href="/ManageAllUser/ListOfVendor" id="btnVendor">Vendor</a>
+                        </form>*@
                     <form class="form-inline my-2 my-lg-0 form_button">
                         <button type="button" class="btn" id="btnLogin">LOG IN</button>
                         <button class="btn" type="button" id="btnSignUp">SIGN UP</button>
@@ -150,7 +152,7 @@
                                 <a href="/ManageAllUser/ListOfVendor" class="css-kbnj0e">Vendor</a>
                             </li>*@
                         <li>
-                            <a href="/Account/HandleSignUp?signUpAs=Driver" class="css-kbnj0e">Join the Fleet</a>
+                            <a href="/Account/HandleSignUp?signUpAs=Driver" id="JoinDriver" class="css-kbnj0e TestDriver">Join the Fleet</a>
                         </li>
                         <li>
                             <a href="#!" class="css-kbnj1e"><b>SUPPORT</b></a>
@@ -293,9 +295,6 @@
                 var area = $("#SearchArea").val();
                 window.location.href = "/Restaurant/ListResturentByArea/" + "?Area=" + area;
             });
-
-
-
 
             $(".input_dr").focus(function () {
                 $(".current_location").show();

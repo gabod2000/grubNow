@@ -41,6 +41,12 @@ namespace FoodDelivery.Controllers
             return View();
         }
 
+
+        public IActionResult PublicSiteLandingPage()
+        {
+            return View();
+        }
+
         // Search For TextBox For AutoComplete
         [HttpGet]
         public async Task<IActionResult> GetSearchValue()

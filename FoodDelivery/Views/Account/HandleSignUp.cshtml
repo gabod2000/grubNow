@@ -40,6 +40,9 @@
             </div>
         </div>
     </div>
+
+    <script src="~/js/jquery-3.2.1.min.js"></script>
+
     <script>
         $(".header_text_div").addClass("d-none");
         $('#CheckBoxConfirm').click(function () {
@@ -49,6 +52,18 @@
             else if ($(this).prop("checked") == false) {
                 $("#btnNext").addClass("isDisabled");
 
+            }
+        });
+
+        $(document).ready(function () {
+            var pageURL = $(location).attr("href");
+            if (pageURL == "http://grubnow-001-site1.gtempurl.com/Account/HandleSignUp?signUpAs=Driver") {
+                $("#test3").attr("checked", "checked");
+            }
+
+            //http://grubnow-001-site1.gtempurl.com/Account/HandleSignUp?signUpAs=Driver
+            if (pageURL == "https://localhost:44361/Account/HandleSignUp?signUpAs=Driver") {
+                $("#test3").attr("checked", "checked");
             }
         });
 
