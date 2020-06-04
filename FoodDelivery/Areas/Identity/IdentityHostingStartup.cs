@@ -17,12 +17,12 @@ namespace FoodDelivery.Areas.Identity
         public void Configure(IWebHostBuilder builder)
         {
             builder.ConfigureServices((context, services) => {
-                services.AddDbContext<LearningDbContext>(options =>
+                services.AddDbContext<GrubNowDbContext>(options =>
                     options.UseSqlServer(Constants.ConnectionString));
 
                 services.AddDefaultIdentity<AppUser>(options => options.SignIn.RequireConfirmedAccount = true).
                  AddRoles<AppRole>()
-                .AddEntityFrameworkStores<LearningDbContext>();
+                .AddEntityFrameworkStores<GrubNowDbContext>();
 
             });
         }

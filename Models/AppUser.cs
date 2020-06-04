@@ -13,21 +13,21 @@ namespace Models
         }
 
         [MaxLength(50)]
-        public string FirstName { get; set; }
+        public virtual string FirstName { get; set; }
         [MaxLength(50)]
-        public string LastName { get; set; }
+        public virtual string LastName { get; set; }
 
-        public string ProfilePic { get; set; }
-        public string DriverCar { get; set; }
-        public DateTime Created { get; set; }
+        public virtual string ProfilePic { get; set; }
+        public virtual string DriverCar { get; set; }
+        public virtual DateTime Created { get; set; }
         [NotMapped]
-        public int? VendorId { get; set; }
+        public virtual int? VendorId { get; set; }
 
         [NotMapped]
         [ForeignKey("VendorId")]
         public virtual Vendor Vendors { get; set; }
         [NotMapped]
-        public int? DriverId { get; set; }
+        public virtual int? DriverId { get; set; }
 
         [ForeignKey("DriverId")]
         [NotMapped]

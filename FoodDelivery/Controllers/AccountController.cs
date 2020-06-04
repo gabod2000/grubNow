@@ -269,12 +269,6 @@ namespace FoodDelivery.Controllers
                             return Json(new { status = Status, message = ex.Message });
                         }
 
-                       
-
-
-
-
-
                         //Adding Vendor Information 
                         Vendor vendor = new Vendor();
 
@@ -417,9 +411,6 @@ namespace FoodDelivery.Controllers
                             }
                         }
                         #endregion
-
-
-
 
                         #region Adding List Of Area and Cusine 
                         // Save Multipale Area

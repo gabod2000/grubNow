@@ -41,18 +41,9 @@ namespace FoodDelivery
             services.AddSingleton(_config);
 
             // Add Service Of LearningDbContext Class
-            services.AddDbContext<LearningDbContext>();
-
-            // adding Email ProviderType
-            //var emailTokenProviderType = typeof(EmailTokenProvider<AppUser>);
-
-            // Add Identity And EntityFrameWorkStore 
-            //services.AddIdentity<AppUser, AppRole>()
-            //        .AddEntityFrameworkStores<LearningDbContext>()
-            //        .AddDefaultTokenProviders();
-            // .AddTokenProvider(TokenOptions.DefaultEmailProvider, emailTokenProviderType);
-
+            services.AddDbContext<GrubNowDbContext>();
             services.AddTransient<IListOfAllData, ListOfAllDataReposity>();
+            services.AddTransient<IEfRepository, EfRepository>();
 
             // Add Identity Option Related To Password and Email
             services.Configure<IdentityOptions>(Options =>
@@ -95,10 +86,6 @@ namespace FoodDelivery
             });
 
             services.AddRazorPages();
-
-
-           
-
 
             // Add Application File Related To Data Base 
             services.AddTransient<IEfRepository, EfRepository>();

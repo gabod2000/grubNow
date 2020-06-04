@@ -8,13 +8,13 @@ namespace Models
 {
     public class OtherLocation
     {
-        public int Id { get; set; }
+        public virtual int Id { get; set; }
         [Required]
-        public string LocationName { get; set; }
+        public virtual string LocationName { get; set; }
         [Required]
-        public string LocationAddress { get; set; }
-        public int VendorID { get; set; }
+        public virtual string LocationAddress { get; set; }
+        public virtual int VendorID { get; set; }
         [ForeignKey("VendorID")]
-        public Vendor Vendor { get; set; }
+        public virtual Vendor Vendor { get; set; }
     }
 }

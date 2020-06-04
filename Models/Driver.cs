@@ -6,9 +6,9 @@ namespace Models
 {
     public  class Driver
     {
-        public int Id { get; set; }
-        public string Address_Location { get; set; }
-        public string UserId { get; set; }
+        public virtual int Id { get; set; }
+        public virtual string Address_Location { get; set; }
+        public virtual string UserId { get; set; }
 
         [ForeignKey("UserId")]
         public virtual AppUser User { get; set; }

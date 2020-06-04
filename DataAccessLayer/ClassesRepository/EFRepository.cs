@@ -1,14 +1,15 @@
 ﻿
+using Models;
 using System.Collections.Generic;
 
 namespace DataAccessLayer
 {
     public class EfRepository : IEfRepository
     {
-        public readonly LearningDbContext _context;
+        public readonly GrubNowDbContext _context;
 
        
-        public EfRepository(LearningDbContext context)
+        public EfRepository(GrubNowDbContext context)
         {
             _context = context;
         }

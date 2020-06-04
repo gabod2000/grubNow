@@ -7,13 +7,13 @@ namespace Models
 {
     public  class VendorWithArea
     {
-        public int Id { get; set; }
-        public int? AreaId { get; set; }
+        public virtual int Id { get; set; }
+        public virtual int? AreaId { get; set; }
 
         [ForeignKey("AreaId")]
         public virtual Area Area { get; set; }
 
-        public int? VendorId { get; set; }
+        public virtual int? VendorId { get; set; }
         [ForeignKey("VendorId")]
         public virtual Vendor Vendor { get; set; }
 

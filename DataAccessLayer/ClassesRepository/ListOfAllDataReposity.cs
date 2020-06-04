@@ -10,9 +10,9 @@ namespace DataAccessLayer.ClassesRepository
 {
     public class ListOfAllDataReposity : IListOfAllData
     {
-        private readonly LearningDbContext _context;
+        private readonly GrubNowDbContext _context;
 
-        public ListOfAllDataReposity(LearningDbContext context)
+        public ListOfAllDataReposity(GrubNowDbContext context)
         {
             _context = context;
         }

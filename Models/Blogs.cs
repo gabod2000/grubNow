@@ -6,12 +6,12 @@ namespace Models
 {
     public class Blogs
     {
-        public int Id { get; set; }
-        public string Heading { get; set; }
-        public string ImagesUrl { get; set; }
-        public string OtherImagesUrl { get; set; }
-        public string Description { get; set; }
-        public string UserId { get; set; }
-        public string UserName { get; set; }
+        public virtual int Id { get; set; }
+        public virtual string Heading { get; set; }
+        public virtual string ImagesUrl { get; set; }
+        public virtual string OtherImagesUrl { get; set; }
+        public virtual string Description { get; set; }
+        public virtual string UserId { get; set; }
+        public virtual string UserName { get; set; }
     }
 }
