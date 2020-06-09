@@ -327,6 +327,101 @@ namespace CommonLayer
         }
         #endregion
 
+        #region List Of Resturent By Area Name
+        public class ListOfResturantVM
+        {
+            public int Id { get; set; }
+            public string StoreName { get; set; }
+            public virtual string Category { get; set; }
+            public string Website_Url { get; set; }
+            public string Address_Location { get; set; }
+            public string UniqueFileName { get; set; }
+        }
+        #endregion
 
+
+        #region Edit Vendor VM  public class EditVendorVM
+        public class EditVendorVM
+        {
+            public string Id { get; set; }
+            public string FirstName { get; set; }
+            public string ProfilePic { get; set; }
+            public string StoreName { get; set; }
+            public string Website_Url { get; set; }
+            public string LastName { get; set; }
+            public string Email { get; set; }
+            public int CategoryId { get; set; }
+            public int CuisineId { get; set; }
+            public string NunberOfLocationName { get; set; }
+            public string PhoneNumber { get; set; }
+            public string Address { get; set; }
+            public IFormFile SubmitterPicture { get; set; }
+            public string OtherArea { get; set; }
+            public string OtherCatregory { get; set; }
+            public string OtherCusine { get; set; }
+            public int VendorId { get; set; }
+        }
+        #endregion
+
+
+        #region Edit Driver
+        public class EditDriverVM
+        {
+            public string Id { get; set; }
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string PhoneNumber { get; set; }
+            public string Email { get; set; }
+            public string Address { get; set; }
+            public int AreaId { get; set; }
+            public string ProfilePic { get; set; }
+            public string CarPic { get; set; }
+            public string OtherArea { get; set; }
+        }
+        #endregion
+
+        #region Edit UserVN
+        public class EditUserVM
+        {
+            public string Id { get; set; }
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string PhoneNumber { get; set; }
+            public string Email { get; set; }
+            public string Address { get; set; }
+        }
+
+        #endregion
+
+        #region Other LocationVM
+        public class OtherLocationVM
+        {
+            public string LocationName { get; set; }
+            public string LocationAddress { get; set; }
+
+            public int VendorID { get; set; }
+        }
+
+        #endregion
+
+        #region List Of Other Location 
+        public class OtherLocationList
+        {
+            public string LocationName { get; set; }
+
+            public string LocationAddress { get; set; }
+
+            public int VendorID { get; set; }
+        }
+        #endregion
+
+        #region Response View Model
+        public class ResponseVM
+        {
+            public string Message  { get; set; }
+            public bool IsSuccessfull { get; set; }
+            public string MessageType { get; set; }
+        }
+        #endregion
     }
 }

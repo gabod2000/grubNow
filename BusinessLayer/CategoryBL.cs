@@ -40,7 +40,7 @@ namespace BusinessLayer
         public async Task<CategoryDTO> GetById(int Id)
         {
             CategoryDTO category = new CategoryDTO();
-            var programs = _BusinessBase.GetById(Id);
+            var programs = .GetById(Id);
             if (programs != null)
             {
                 category.Id = programs.Id;

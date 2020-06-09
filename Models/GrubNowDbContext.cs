@@ -22,6 +22,8 @@ namespace Models
         public DbSet<OtherLocation> OtherLocations { get; set; }
         public DbSet<DriverWithArea> DriverWithAreas { get; set; }
         public DbSet<Blogs> Blogs { get; set; }
+
+        public DbSet<TokenForResetPassword> TokenForResetPasswords { get; set; }
         public DbSet<VendorWithArea> VendorWithAreas { get; set; }
         public DbSet<VendorWithCuisine> VendorWithCuisines { get; set; }
         public DbSet<Area> Areas { get; set; }

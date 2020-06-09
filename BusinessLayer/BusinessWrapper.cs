@@ -9,6 +9,7 @@ namespace BusinessLayer
         private AreaBL areaBL;
         private CategoryBL categoryBL;
         private BlogBL blogBL;
+        private CusinieBL cusinieBL;
         public IServiceProvider _serviceProvider;
         public BusinessWrapper(IServiceProvider serviceProvider)
         {
@@ -22,6 +23,15 @@ namespace BusinessLayer
                 return userBL == null ? userBL = new UserBL(_serviceProvider) : userBL;
             }
         }
+
+        public CusinieBL CusinieBL
+        {
+            get
+            {
+                return cusinieBL == null ? cusinieBL = new CusinieBL(_serviceProvider) : cusinieBL;
+            }
+        }
+
 
         public CategoryBL CategoryBL
         {

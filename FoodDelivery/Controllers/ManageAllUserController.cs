@@ -184,7 +184,6 @@ namespace FoodDelivery.Controllers
                     var updateuser=_userManger.UpdateAsync(userVernder).Result;
                     if (updateuser.Succeeded)
                     {
-
                         // Geting Vendor Data
                         var vendor = _listOfAll.GetVendorByUserId(model.Id);
                         if (vendor != null)
@@ -664,7 +663,6 @@ namespace FoodDelivery.Controllers
             bool Status = false;
             if (ModelState.IsValid)
             {
-               
                 OtherLocation obj = new OtherLocation();
                 obj.VendorID = Model.VendorID;
                 obj.LocationAddress = Model.LocationAddress;
@@ -698,12 +696,8 @@ namespace FoodDelivery.Controllers
                     LocationAddress = item.LocationAddress,
                     LocationName = item.LocationName
                 });
-
             }
             return View(otherLocaction);
         }
-
-        
-
     }
 }

@@ -14,6 +14,6 @@ namespace FoodDelivery.Models
         public string LocationAddress { get; set; }
 
         public int VendorID { get; set; }
-        public List<OtherLocationList> Lista { get; set; }
+        public List<OtherLocationList> ListOfOtherLocation { get; set; }
     }
 }

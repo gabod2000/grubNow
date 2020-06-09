@@ -24,7 +24,7 @@ namespace API.Controllers
         [HttpGet("{id}")]
         public BaseResponse GetById(int id)
         {
-            return constructResponse(_businessBase.GetById(id));
+            return constructResponse(_businessWrapper.AreaBL.GetById(id));
         }
 
         // POST: api/City

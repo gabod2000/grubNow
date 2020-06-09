@@ -19,14 +19,14 @@ namespace API.Controllers
         [HttpGet]
         public BaseResponse Get()
         {
-            return constructResponse(_businessBase.Get());
+            return constructResponse(_businessWrapper.CusinieBL.Get());
         }
 
         // GET: api/License/5
         [HttpGet("{id}")]
         public BaseResponse GetById(int id)
         {
-            return constructResponse(_businessBase.GetById(id));
+            return constructResponse(_businessWrapper.CusinieBL.GetById(id));
         }
 
         // POST: api/License

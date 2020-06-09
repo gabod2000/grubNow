@@ -114,45 +114,62 @@ namespace BusinessLayer
             }
             return isSuccessful;
         }
-        public async Task<BaseResponse> UpdatePassword(UpdatePaswordVM model)
+        public async Task<string> UpdatePassword(UpdatePaswordVM model)
         {
+            
+            string Message = string.Empty;
             var user = await _userManager.FindByIdAsync(model.Id);
-            var result = await _userManager.ChangePasswordAsync(user, model.Currentpassword, model.NewPossword);
-            if (result.Succeeded)
+            if (user!=null)
             {
-                response.message = "Update Password Successfully";
-                response.messageType = MessageType.Success;
-                response.isSuccessfull = true;
+                var result = await _userManager.ChangePasswordAsync(user, model.Currentpassword, model.NewPossword);
+                if (result.Succeeded)
+                {
+                    Message = "Update Password Successfully";
+                    
+                    OtherConstants.messageType = MessageType.Success;
+                    OtherConstants.isSuccessful = true;
+                    OtherConstants.responseMsg = Message;
+                    return null;
+                }
+                else
+                {
+                    Message = "Please Check Current Password";
+                    OtherConstants.messageType = MessageType.Error;
+                    OtherConstants.isSuccessful = false;
+                    OtherConstants.responseMsg = Message;
+                    return null;
+                }
             }
             else
             {
-                response.messageType = MessageType.Error;
-                response.isSuccessfull = false;
-                response.errorMessage = "Please Check Current Password";
+                Message = "User Does Not Exist";
+                OtherConstants.messageType = MessageType.Error;
+                OtherConstants.isSuccessful = false;
+                OtherConstants.responseMsg = Message;
+                return null;
             }
-            return response;
+            
         }
 
         // This methods Generate Token And Send Email To user 
-        public async Task<BaseResponse> ResetPasswordLink(ResetlPasswordViewModel model)
+        public async Task<string> ResetPasswordLink(ResetlPasswordViewModel model)
         {
+            string Message = string.Empty;
             var user = _userManager.FindByNameAsync(model.UserName).Result;
             if (user == null || !(_userManager.IsEmailConfirmedAsync(user).Result))
             {
-                response.errorMessage = "Email Not Confirmed";
-                return response;
+                Message = "Email Not Confirmed";
+                OtherConstants.messageType = MessageType.Error;
+                OtherConstants.isSuccessful = false;
+                OtherConstants.responseMsg = Message;
+                return null;
+                
             }
 
             // Genrate password Reset Token 
             var token = _userManager.
                   GeneratePasswordResetTokenAsync(user).Result;
 
-
-            //Token And UserId Store In TokenForResetPassword Table 
-            //TokenForResetPassword tokenFor = new TokenForResetPassword();
-            //tokenFor.CreatedDate = DateTime.UtcNow;
-            //tokenFor.Token = token;
-            //tokenFor.UserId = user.Id;
 
             //_context.TokenForResetPassword.Add(tokenFor);
             await _context.SaveChangesAsync();
@@ -162,40 +179,59 @@ namespace BusinessLayer
             string resetLink = "https://localhost:4400/ResetPassword/Account/?token=" + token;
 
             //Its Dummy
-            var toEmail = "alt.bm-e02xa4p@yopmail.com";
-            var emailSubject = "Email with Attachment";
-            var fromEmailAddress = "alt.bm-e02xa4p@yopmail.com";
-            var emailBody = "Hello User.<br/> Welcome to Plenum. <br/> Your Password reset link is Here  " + "<br/>" + " You can " + "<a href=" + resetLink + ">Click Here</a>" + " to change your password and activate your account. <br/> Thanks.";
-            response.dynamicResult = sendMail(toEmail, emailSubject, emailBody, fromEmailAddress);
-            return response;
+            var toEmail = "grubnow@yopmail.com";
+            var emailSubject = "Forget Password Link";
+            var fromEmailAddress = "grubnow@yopmail.com";
+            var emailBody = "Hello User.<br/> Welcome to GrubNow. <br/> Your Password reset link is Here  " + "<br/>" + " You can " + "<a href=" + resetLink + ">Click Here</a>" + " to change your password and activate your account. <br/> Thanks.  <br/> Token="+token;
+            Message = sendMail(toEmail, emailSubject, emailBody, fromEmailAddress);
+            TokenForResetPassword reset = new TokenForResetPassword();
+            reset.Token = token;
+            reset.UserId = user.Id;
+            _context.TokenForResetPasswords.Add(reset);
+            _context.SaveChanges();
+            OtherConstants.messageType = MessageType.Success;
+            OtherConstants.isSuccessful = true;
+            OtherConstants.responseMsg = Message;
+            return null;
         }
 
         // Token And Other Informayion Sent To this Methods and reset password
-        public async Task<BaseResponse> ResetPassword(ResetPasswordViewModel model)
+        public async Task<string> ResetPassword(ResetPasswordViewModel model)
         {
+            string Message = string.Empty;
+            var UserId = _context.TokenForResetPasswords.FirstOrDefault(x => x.Token == model.Token);
+            if (UserId != null)
+            {
+                var user = await _userManager.FindByIdAsync(UserId.UserId);
+                var result = _userManager.ResetPasswordAsync
+                          (user, model.Token, model.Password).Result;
+                if (result.Succeeded)
+                {
+                    Message = "Password Reset Successfully";
+                    OtherConstants.messageType = MessageType.Success;
+                    OtherConstants.isSuccessful = true;
+                    OtherConstants.responseMsg = Message;
+                    return null;
 
+                }
+                else
+                {
+                    Message = "Error While Reset Password";
+                    OtherConstants.messageType = MessageType.Error;
+                    OtherConstants.isSuccessful = false;
+                    OtherConstants.responseMsg = Message;
+                    return null;
 
-            //var UserId = _context.TokenForResetPassword.FirstOrDefault(x => x.Token == model.Token);
-            //if (UserId != null)
-            //{
-            //    var user = await _userManager.
-            //    FindByIdAsync(UserId.UserId);
-
-            //    var result = _userManager.ResetPasswordAsync
-            //              (user, model.Token, model.Password).Result;
-            //    if (result.Succeeded)
-            //    {
-            //        response.message = "Password Reset Successfully";
-            //        response.isSuccessfull = true;
-            //        // return response;
-            //    }
-            //    else
-            //    {
-            //        response.errorMessage = "Error While Reset Password";
-            //        response.isSuccessfull = false;
-            //    }
-            //}
-            return response;
+                }
+            }
+            else
+            {
+                Message = "Token Invalid";
+                OtherConstants.messageType = MessageType.Error;
+                OtherConstants.isSuccessful = false;
+                OtherConstants.responseMsg = Message;
+                return null;
+            }
         }
 
         public async Task<UserLoginWithTokenVM> GetById(string id)
@@ -240,7 +276,7 @@ namespace BusinessLayer
 
 
         #region VendorSignUp
-        public async Task<BaseResponse> SignUpVendor(SignUpVendorVM model, string AreaIDs, string CusineIds, IFormFile upload)
+        public async Task<string> SignUpVendor(SignUpVendorVM model, string AreaIDs, string CusineIds, IFormFile upload)
         {
             bool Status = false;
             string Message = string.Empty;
@@ -255,25 +291,21 @@ namespace BusinessLayer
             var userName = _userManager.FindByNameAsync(model.Email).Result;
             if (userName != null)
             {
-                Message = "UserName Already Exsit.Please Enter Another UserName";
-                Status = false;
-                response.message = Message;
-                response.isSuccessfull = Status;
-                return response;
+                OtherConstants.messageType = MessageType.Error;
+                OtherConstants.isSuccessful = false;
+                OtherConstants.responseMsg = "UserName Already Exsit.Please Enter Another UserName";
+                return null;
             }
 
             //User Email Already Exsit
             var userEmail = _userManager.FindByEmailAsync(model.Email).Result;
             if (userEmail != null)
             {
-                Message = "This Email is Already Exsit.Please Enter Another Email";
-                Status = false;
-                response.message = Message;
-                response.isSuccessfull = Status;
-                return response;
+                OtherConstants.messageType = MessageType.Error;
+                OtherConstants.isSuccessful = false;
+                OtherConstants.responseMsg = "This Email is Already Exsit.Please Enter Another Email";
+                return null;
             }
-
-
             #endregion
 
             // User
@@ -328,17 +360,16 @@ namespace BusinessLayer
                     }
                     else
                     {
-                        Status = false;
-                        Message = "Other Category Already Exist Please Use an Other One ";
-
+                        OtherConstants.messageType = MessageType.Error;
+                        OtherConstants.isSuccessful = false;
+                        OtherConstants.responseMsg = "Other Category Already Exist Please Use an Other One ";
                         //Delete User
                         var userdelete = _userManager.DeleteAsync(user).Result;
                         if (userdelete.Succeeded)
                         {
-                            response.message = Message;
-                            response.isSuccessfull = Status;
-                            return response;
+                            return null;
                         }
+                        
                     }
                 }
                 #endregion
@@ -381,9 +412,6 @@ namespace BusinessLayer
                     }
                     else
                     {
-                        Status = false;
-                        Message = "Other Area Already Exist Please Use an Other One ";
-
                         //Delete User
                         var userDelete = _userManager.DeleteAsync(user).Result;
                         if (userDelete.Succeeded)
@@ -393,9 +421,10 @@ namespace BusinessLayer
 
                             _efRepository.SaveChanges();
                         }
-                        response.message = Message;
-                        response.isSuccessfull = Status;
-                        return response;
+                        OtherConstants.messageType = MessageType.Error;
+                        OtherConstants.isSuccessful = false;
+                        OtherConstants.responseMsg = "Other Area Already Exist Please Use an Other One";
+                        return null;
                     }
                 }
 
@@ -449,9 +478,10 @@ namespace BusinessLayer
                             _efRepository.SaveChanges();
                         }
 
-                        response.message = Message;
-                        response.isSuccessfull = Status;
-                        return response;
+                        OtherConstants.messageType = MessageType.Error;
+                        OtherConstants.isSuccessful = Status;
+                        OtherConstants.responseMsg = Message;
+                        return null;
                     }
                 }
                 #endregion
@@ -495,18 +525,20 @@ namespace BusinessLayer
                 Message = "Successfully Created Your Account";
 
                 // Redirect To SignInPage
-                response.message = Message;
-                response.isSuccessfull = Status;
-                return response;
+                OtherConstants.messageType = MessageType.Success;
+                OtherConstants.isSuccessful = Status;
+                OtherConstants.responseMsg = Message;
+                return null;
 
             }
             else
             {
                 Status = false;
                 Message = "Error While Creating Your Account";
-                response.message = Message;
-                response.isSuccessfull = Status;
-                return response;
+                OtherConstants.messageType = MessageType.Error;
+                OtherConstants.isSuccessful = Status;
+                OtherConstants.responseMsg = Message;
+                return null;
             }
 
 
@@ -543,7 +575,7 @@ namespace BusinessLayer
         #endregion
 
         #region SignUpDriver
-        public async Task<BaseResponse> SignUpDriver(SignUpDriverVM model, string AreaIDs)
+        public async Task<string> SignUpDriver(SignUpDriverVM model, string AreaIDs)
         {
             bool Status = false;
             string Message = string.Empty;
@@ -557,9 +589,10 @@ namespace BusinessLayer
             {
                 Message = "UserName Already Exsit.Please Enter Another UserName";
                 Status = false;
-                response.message = Message;
-                response.isSuccessfull = Status;
-                return response;
+                OtherConstants.messageType = MessageType.Error;
+                OtherConstants.isSuccessful = Status;
+                OtherConstants.responseMsg = Message;
+                return null;
             }
 
             //User Email Already Exsit
@@ -568,9 +601,10 @@ namespace BusinessLayer
             {
                 Message = "This Email is Already Exsit.Please Enter Another Email";
                 Status = false;
-                response.message = Message;
-                response.isSuccessfull = Status;
-                return response;
+                OtherConstants.messageType = MessageType.Error;
+                OtherConstants.isSuccessful = Status;
+                OtherConstants.responseMsg = Message;
+                return null;
             }
 
             // User
@@ -631,9 +665,10 @@ namespace BusinessLayer
                             _efRepository.Delete(driver);
                             _efRepository.SaveChanges();
                         }
-                        response.message = Message;
-                        response.isSuccessfull = Status;
-                        return response;
+                        OtherConstants.messageType = MessageType.Error;
+                        OtherConstants.isSuccessful = Status;
+                        OtherConstants.responseMsg = Message;
+                        return null;
                     }
                 }
 
@@ -658,24 +693,26 @@ namespace BusinessLayer
 
                 Status = true;
                 Message = "Successfully Created Your Account";
-                response.message = Message;
-                response.isSuccessfull = Status;
-                return response;
+                OtherConstants.messageType = MessageType.Success;
+                OtherConstants.isSuccessful = Status;
+                OtherConstants.responseMsg = Message;
+                return null;
             }
             else
             {
                 Status = false;
                 Message = "Error While Creating Your Account";
-                response.message = Message;
-                response.isSuccessfull = Status;
-                return response;
+                OtherConstants.messageType = MessageType.Error;
+                OtherConstants.isSuccessful = Status;
+                OtherConstants.responseMsg = Message;
+                return null;
             }
 
         }
         #endregion
 
         #region SignUp User
-        public async Task<BaseResponse> SignUpUser(SignUpUserVM model)
+        public async Task<string> SignUpUser(SignUpUserVM model)
         {
             bool Status = false;
             string Message = string.Empty;
@@ -686,9 +723,10 @@ namespace BusinessLayer
             {
                 Message = "UserName Already Exsit.Please Enter Another UserName";
                 Status = false;
-                response.message = Message;
-                response.isSuccessfull = Status;
-                return response;
+                OtherConstants.messageType = MessageType.Error;
+                OtherConstants.isSuccessful = Status;
+                OtherConstants.responseMsg = Message;
+                return null;
             }
 
             //User Email Already Exsit
@@ -697,9 +735,10 @@ namespace BusinessLayer
             {
                 Message = "This Email is Already Exsit.Please Enter Another Email";
                 Status = false;
-                response.message = Message;
-                response.isSuccessfull = Status;
-                return response;
+                OtherConstants.messageType = MessageType.Error;
+                OtherConstants.isSuccessful = Status;
+                OtherConstants.responseMsg = Message;
+                return null;
             }
 
             // User
@@ -722,25 +761,27 @@ namespace BusinessLayer
                 //SendEmailConformationLink(user);
                 Status = true;
                 Message = "Successfully Created Your Account";
-                response.message = Message;
-                response.isSuccessfull = Status;
-                return response;
+                OtherConstants.messageType = MessageType.Success;
+                OtherConstants.isSuccessful = Status;
+                OtherConstants.responseMsg = Message;
+                return null;
 
             }
             else
             {
                 Status = false;
                 Message = "Error While Creating Your Account";
-                response.message = Message;
-                response.isSuccessfull = Status;
-                return response;
+                OtherConstants.messageType = MessageType.Error;
+                OtherConstants.isSuccessful = Status;
+                OtherConstants.responseMsg = Message;
+                return null;
             }
         }
         #endregion
 
         #region Delete Driver User and Vendor
         // POST: Vendor/Delete/5
-        public async Task<BaseResponse> DeleteVendor(string id)
+        public async Task<string> DeleteVendor(string id)
         {
             bool Status = false;
             string Message = string.Empty;
@@ -783,24 +824,28 @@ namespace BusinessLayer
             var result = _userManager.DeleteAsync(user).Result;
             if (result.Succeeded)
             {
-                Status = true;
+              
                 Message = "Record Successfully Deleted.";
+                OtherConstants.messageType = MessageType.Success;
+                OtherConstants.isSuccessful = true;
+                OtherConstants.responseMsg = Message;
+                return null;
 
             }
             else
             {
                 Status = false;
                 Message = "Error While Deleted Record.";
+                OtherConstants.messageType = MessageType.Error;
+                OtherConstants.isSuccessful = Status;
+                OtherConstants.responseMsg = Message;
+                return null;
             }
-            response.message = Message;
-            response.isSuccessfull = Status;
-            return response;
-
         }
 
 
         // POST: Vendor/Delete/5
-        public async Task<BaseResponse> DeleteDriver(string id)
+        public async Task<string> DeleteDriver(string id)
         {
             bool Status = false;
             string Message = string.Empty;
@@ -828,22 +873,26 @@ namespace BusinessLayer
             {
                 Status = true;
                 Message = "Record Successfully Deleted.";
+                OtherConstants.messageType = MessageType.Success;
+                OtherConstants.isSuccessful = Status;
+                OtherConstants.responseMsg = Message;
+                return null;
 
             }
             else
             {
                 Status = false;
                 Message = "Error While Deleted Record.";
+                OtherConstants.messageType = MessageType.Error;
+                OtherConstants.isSuccessful = Status;
+                OtherConstants.responseMsg = Message;
+                return null;
             }
-            response.message = Message;
-            response.isSuccessfull = Status;
-            return response;
-
         }
 
 
         // POST: User/Delete/5
-        public async Task<BaseResponse> DeleteUser(string id)
+        public async Task<string> DeleteUser(string id)
         {
             bool Status = false;
             string Message = string.Empty;
@@ -853,20 +902,24 @@ namespace BusinessLayer
             {
                 Status = true;
                 Message = "Record Successfully Deleted.";
+                OtherConstants.messageType = MessageType.Success;
+                OtherConstants.isSuccessful = Status;
+                OtherConstants.responseMsg = Message;
+                return null;
 
             }
             else
             {
                 Status = false;
                 Message = "Error While Deleted Record.";
+                OtherConstants.messageType = MessageType.Error;
+                OtherConstants.isSuccessful = Status;
+                OtherConstants.responseMsg = Message;
+                return null;
             }
-            response.message = Message;
-            response.isSuccessfull = Status;
-            return response;
+          
         }
         #endregion
-
-
 
         #region Get All Driver,Vendor,User
         public async Task<IEnumerable<SignUpUserVM>> AllUser()
@@ -1051,6 +1104,7 @@ namespace BusinessLayer
         // Here Is Send Email Methods with SMTP
         public string sendMail(string toEmail, string emailSubject, string emailBody, string fromEmailAddress)
         {
+            bool Status = false;
             string Message = string.Empty;
             try
             {
@@ -1065,40 +1119,417 @@ namespace BusinessLayer
 
                 //Get client credentails from web.config
                 client.Credentials = new System.Net.NetworkCredential
-                ("plenum2019@gmail.com  ", "Test@0000");
+                ("grubNow12@gmail.com", "Test@0000");
                 client.Send(mail);
                 Message = "Email Send Successfully";
-
+                Status = true;
+                OtherConstants.messageType = MessageType.Success;
             }
-            catch (Exception E)
+            catch (Exception ex)
             {
-                var a = "a";
+                Message = "Error " + ex.Message;
+                Status = false;
+                OtherConstants.messageType = MessageType.Error;
             }
 
+ 
             return Message;
+            
         }
-        //public string ConfirmEmail(string UserIdentifire, string token)
-        //{
-        //    var UserWithGuid= _context.Users.FirstOrDefault(x=>x.UserIdentifire== new Guid(UserIdentifire));
-        //    if (UserWithGuid!=null)
-        //    {
-        //        var user = _userManager.FindByIdAsync(UserWithGuid.Id).Result;
-        //        if (user != null)
-        //        {
-        //            var result = _userManager.ConfirmEmailAsync(user, token).Result;
-        //            if (result.Succeeded)
-        //            {
-        //                OtherConstants.responseMsg = "Successfully Approved Your Account";
-        //                OtherConstants.isSuccessful = true;
-        //            }
-        //            else
-        //            {
-        //                OtherConstants.responseMsg = "Your Account Is Not Approved Please Contact Addministrator";
-        //                OtherConstants.isSuccessful = false;
-        //            }
-        //        }
-        //    }
-        //    return "ok";
-        //}
+        public string ConfirmEmail(string Id, string token)
+        {
+            var UserWithGuid = _context.Users.FirstOrDefault(x => x.Id == Id);
+            if (UserWithGuid != null)
+            {
+                var user = _userManager.FindByIdAsync(UserWithGuid.Id).Result;
+                if (user != null)
+                {
+                    var result = _userManager.ConfirmEmailAsync(user, token).Result;
+                    if (result.Succeeded)
+                    {
+                        OtherConstants.responseMsg = "Successfully Approved Your Account";
+                        OtherConstants.isSuccessful = true;
+                    }
+                    else
+                    {
+                        OtherConstants.responseMsg = "Your Account Is Not Approved Please Contact Addministrator";
+                        OtherConstants.isSuccessful = false;
+                    }
+                }
+            }
+            return "ok";
+        }
+
+        #region List Of Resturant By Area
+        public async Task<IEnumerable<ListOfResturantVM>> ListResturentByArea(string Area)
+        {
+            var data = _listOfAll.GetAreaByName(Area);
+            List<ListOfResturantVM> listOfs = new List<ListOfResturantVM>();
+            if (data != null)
+            {
+                foreach (var item in data.VendorWithAreas)
+                {
+                    var vendor = _listOfAll.GetVendorById(item.VendorId ?? 0);
+                    if (vendor.Category.Name == "Restaurants")
+                    {
+                        ListOfResturantVM resturantVM = new ListOfResturantVM();
+                        resturantVM.Category = vendor.Category.Name;
+                        resturantVM.Id = vendor.Id;
+                        resturantVM.StoreName = vendor.StoreName;
+                        resturantVM.UniqueFileName = vendor.UniqueFileName;
+                        resturantVM.Website_Url = vendor.Website_Url;
+                        resturantVM.Address_Location = vendor.Address_Location;
+                        listOfs.Add(resturantVM);
+                    }
+                }
+            }
+
+            return listOfs;
+        }
+        #endregion
+
+        #region List Of All Resturent
+        public async Task<IEnumerable<ListOfResturantVM>> ListResturent()
+        {
+            List<ListOfResturantVM> listOfs = new List<ListOfResturantVM>();
+
+            var vendor = _listOfAll.GetVendor();
+            if (vendor != null)
+            {
+                foreach (var item in vendor)
+                {
+                    if (item.Category.Name == "Restaurants")
+                    {
+                        ListOfResturantVM resturantVM = new ListOfResturantVM();
+                        resturantVM.Category = item.Category.Name;
+                        resturantVM.Id = item.Id;
+                        resturantVM.StoreName = item.StoreName;
+                        resturantVM.UniqueFileName = item.UniqueFileName;
+                        resturantVM.Website_Url = item.Website_Url;
+                        resturantVM.Address_Location = item.Address_Location;
+                        listOfs.Add(resturantVM);
+                    }
+                }
+            }
+            return listOfs;
+        }
+        #endregion
+
+        #region Edit Vendor
+        /// <summary>
+        /// Edit Vendor Get
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public EditVendorVM EditVendor(string id)
+        {
+            EditVendorVM vendorVM = null;
+            var user = _userManager.FindByIdAsync(id).Result;
+            if (user != null)
+            {
+
+                vendorVM = new EditVendorVM();
+                vendorVM.Id = user.Id;
+                vendorVM.FirstName = user.FirstName;
+                vendorVM.LastName = user.LastName;
+                vendorVM.PhoneNumber = user.PhoneNumber;
+                vendorVM.Email = user.Email;
+
+                // Geting Vendor Data
+                var vendor = _listOfAll.GetVendorByUserId(id);
+                if (vendor != null)
+                {
+                    vendorVM.CategoryId = vendor.Category.Id;
+                    vendorVM.StoreName = vendor.StoreName;
+                    vendorVM.Website_Url = vendor.Website_Url;
+                    vendorVM.Address = vendor.Address_Location;
+                    vendorVM.NunberOfLocationName = vendor.NumberOfLocation;
+                }
+            }
+            return vendorVM;
+        }
+
+
+
+        /// <summary>
+        /// Edit Post Methods
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="upload"></param>
+        /// <returns></returns>
+        public async Task<string> EditVendor(EditVendorVM model, IFormFile upload)
+        {
+            string Message = string.Empty;
+            bool Status = false;
+            var userVernder = _userManager.FindByIdAsync(model.Id).Result;
+            if (userVernder != null)
+            {
+                userVernder.Id = model.Id;
+                userVernder.FirstName = model.FirstName;
+                userVernder.LastName = model.LastName;
+                userVernder.PhoneNumber = model.PhoneNumber;
+                userVernder.Email = model.Email;
+                var updateuser = _userManager.UpdateAsync(userVernder).Result;
+                if (updateuser.Succeeded)
+                {
+
+                    // Geting Vendor Data
+                    var vendor = _listOfAll.GetVendorByUserId(model.Id);
+                    if (vendor != null)
+                    {
+                        string UniqueFileName = "";
+                        try
+                        {
+                            #region Create File Path 
+
+                            var datetime = DateTime.Now;
+                            UniqueFileName = datetime.Month + datetime.Day + datetime.Hour + datetime.Minute + datetime.Ticks + "-" + upload.FileName;
+                            var path = Directory.GetCurrentDirectory() + "/wwwroot/Uploads/";
+                            var filemodel = System.IO.Path.Combine(path, UniqueFileName);
+                            //Store file in Directory Folder 
+                            using (var stream1 = new FileStream(filemodel, FileMode.Create))
+                            {
+                                upload.CopyToAsync(stream1).Wait();
+                            }
+                            #endregion
+                        }
+                        catch (Exception ex)
+                        {
+                            OtherConstants.messageType = MessageType.Error;
+                            OtherConstants.isSuccessful = false;
+                            OtherConstants.responseMsg = ex.Message;
+                            return null;
+
+                        }
+                        vendor.CategoryId = model.CategoryId;
+                        vendor.StoreName = model.StoreName;
+                        vendor.Website_Url = model.Website_Url;
+                        vendor.UniqueFileName = UniqueFileName;
+                        vendor.Address_Location = model.Address;
+                        _efRepository.Update(vendor);
+                        if (_efRepository.SaveChanges())
+                        {
+                            Message = " Successfully Update Record";
+                            Status = true;
+                            OtherConstants.messageType = MessageType.Success;
+                            OtherConstants.isSuccessful = Status;
+                            OtherConstants.responseMsg = Message;
+                            return null;
+                        }
+                        else
+                        {
+                            Message = " Error While Updating Record";
+                            Status = true;
+                            OtherConstants.messageType = MessageType.Error;
+                            OtherConstants.isSuccessful = Status;
+                            OtherConstants.responseMsg = Message;
+                            return null;
+                        }
+                    }
+                }
+
+            }
+            else
+            {
+                Message = "User Con Not Find";
+                Status = false;
+            }
+
+
+            OtherConstants.messageType = MessageType.Error;
+            OtherConstants.isSuccessful = Status;
+            OtherConstants.responseMsg = Message;
+            return null;
+        }
+        #endregion
+
+        #region Edit Driver
+        public EditDriverVM EditDriver(string id)
+        {
+            EditDriverVM model = null;
+            var user = _userManager.FindByIdAsync(id).Result;
+            if (user != null)
+            {
+                model = new EditDriverVM();
+                model.FirstName = user.FirstName;
+                model.LastName = user.LastName;
+                model.Email = user.Email;
+                model.PhoneNumber = user.PhoneNumber;
+                model.Id = user.Id;
+
+                var driver = _listOfAll.GetDriverByUserId(id);
+                if (driver != null)
+                {
+                    model.Address = driver.Address_Location;
+                }
+                // model.AreaId =driver.
+            }
+            return model;
+        }
+
+        /// <summary>
+        /// Edit Driver Post
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        public BaseResponse EditDriver(EditDriverVM model)
+        {
+            string Message = string.Empty;
+            bool Status = false;
+
+            var userDriver = _userManager.FindByIdAsync(model.Id).Result;
+            if (userDriver != null)
+            {
+                userDriver.Id = model.Id;
+                userDriver.FirstName = model.FirstName;
+                userDriver.LastName = model.LastName;
+                userDriver.PhoneNumber = model.PhoneNumber;
+                userDriver.Email = model.Email;
+                var user = _userManager.UpdateAsync(userDriver).Result;
+                if (user.Succeeded)
+                {
+                    var driver = _listOfAll.GetDriverByUserId(model.Id);
+                    if (driver != null)
+                    {
+                        driver.Address_Location = model.Address;
+                        _efRepository.Update(driver);
+                        if (_efRepository.SaveChanges())
+                        {
+                            Message = " Successfully Update Record";
+                            Status = true;
+                            OtherConstants.messageType = MessageType.Success;
+                            OtherConstants.isSuccessful = Status;
+                            OtherConstants.responseMsg = Message;
+                            return null;
+                        }
+                        else
+                        {
+                            Message = " Error While Updating Record";
+                            Status = false;
+                            OtherConstants.messageType = MessageType.Error;
+                            OtherConstants.isSuccessful = Status;
+                            OtherConstants.responseMsg = Message;
+                            return null;
+
+                        }
+                    }
+                }
+
+            }
+            else
+            {
+                Message = "Driver Not Exist";
+                Status = false;
+            }
+            OtherConstants.messageType = MessageType.Error;
+            OtherConstants.isSuccessful = Status;
+            OtherConstants.responseMsg = Message;
+            return null;
+        }
+        #endregion
+
+        #region Edit User
+        public EditUserVM EditUser(string id)
+        {
+            EditUserVM model = null;
+            var user = _userManager.FindByIdAsync(id).Result;
+            if (user != null)
+            {
+                model = new EditUserVM();
+                model.FirstName = user.FirstName;
+                model.LastName = user.LastName;
+                model.Email = user.Email;
+                model.PhoneNumber = user.PhoneNumber;
+                model.Id = user.Id;
+            }
+            return model;
+        }
+
+        public async Task<string> EditUser(EditUserVM model)
+        {
+
+            string Message = string.Empty;
+            bool Status = false;
+            var userDriver = _userManager.FindByIdAsync(model.Id).Result;
+            if (userDriver != null)
+            {
+                userDriver.Id = model.Id;
+                userDriver.FirstName = model.FirstName;
+                userDriver.LastName = model.LastName;
+                userDriver.PhoneNumber = model.PhoneNumber;
+                userDriver.Email = model.Email;
+                var user = _userManager.UpdateAsync(userDriver).Result;
+                if (user.Succeeded)
+                {
+                    Message = " Successfully Update Record";
+                    Status = true;
+                    OtherConstants.messageType = MessageType.Success;
+                    OtherConstants.isSuccessful = Status;
+                    OtherConstants.responseMsg = Message;
+                    return null;
+                }
+                else
+                {
+                    Message = " Error While Updating Record";
+                    Status = false;
+                }
+
+            }
+            OtherConstants.messageType = MessageType.Error;
+            OtherConstants.isSuccessful = Status;
+            OtherConstants.responseMsg = Message;
+            return null;
+        }
+        #endregion
+
+        #region Add Other Location
+        public async Task<string> Addlocation(OtherLocationVM Model)
+        {
+            string Message = string.Empty;
+            bool Status = false;
+
+            OtherLocation obj = new OtherLocation();
+            obj.VendorID = Model.VendorID;
+            obj.LocationAddress = Model.LocationAddress;
+            obj.LocationName = Model.LocationName;
+            _efRepository.Add(obj);
+            var result = _efRepository.SaveChanges();
+            if (result)
+            {
+                Status = true;
+                Message = "Record Successfully Created.";
+                OtherConstants.messageType = MessageType.Success;
+                OtherConstants.isSuccessful = Status;
+                OtherConstants.responseMsg = Message;
+                return null;
+            }
+            else
+            {
+                Status = false;
+                Message = "Error While Creating Record.";
+                OtherConstants.messageType = MessageType.Error;
+                OtherConstants.isSuccessful = Status;
+                OtherConstants.responseMsg = Message;
+                return null;
+            }
+        }
+        #endregion
+
+        #region List Other Location
+        public IEnumerable<OtherLocationList> ListOfLocation(int VendorId)
+        {
+            List<OtherLocationList> otherLocaction = new List<OtherLocationList>();
+            var getOtherLocationByVendorID = _listOfAll.GetOtherLocationByVendorID(VendorId).ToList();
+            foreach (var item in getOtherLocationByVendorID)
+            {
+                otherLocaction.Add(new OtherLocationList()
+                {
+                    LocationAddress = item.LocationAddress,
+                    LocationName = item.LocationName
+                });
+            }
+            return otherLocaction;
+        }
+        #endregion
     }
 }

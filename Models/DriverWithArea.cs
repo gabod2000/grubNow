@@ -8,7 +8,6 @@ namespace Models
             public virtual int? AreaId { get; set; }
             [ForeignKey("AreaId")]
             public virtual Area Area { get; set; }
-
             public virtual int? DriverId { get; set; }
             [ForeignKey("DriverId")]
             public virtual Driver Driver { get; set; }

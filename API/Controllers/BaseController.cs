@@ -21,7 +21,7 @@ namespace API.Controllers
             {
                 dynamicResult = response,
                 isSuccessfull = OtherConstants.isSuccessful,
-                statusCode = response != null ? 200 : 500,
+                statusCode = OtherConstants.isSuccessful == true ? 200 : 500,
                 messageType = OtherConstants.messageType,
                 message = OtherConstants.responseMsg,
                // errorMessage = OtherConstants.
