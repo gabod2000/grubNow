@@ -69,7 +69,6 @@ namespace FoodDelivery.Controllers
 
         public IActionResult UserProfile()
         {
-
             var user = User.Identity.Name;
             UserProfileVM userProfileVM = new UserProfileVM();
             if (user != null)

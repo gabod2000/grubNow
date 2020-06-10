@@ -22,7 +22,7 @@ namespace API.Controllers
         [AllowAnonymous]
         public async Task<BaseResponse> SignUpVendor([FromBody] SignUpVendorVM model)
         {
-            return constructResponse(await _businessWrapper.UserBL.SignUpVendor(model,model.AreaIds,model.CuisineIds,model.SubmitterPicture));
+            return constructResponse(await _businessWrapper.UserBL.SignUpVendor(model,model.SubmitterPicture));
         }
 
         [HttpPost]
@@ -30,7 +30,7 @@ namespace API.Controllers
         [AllowAnonymous]
         public async Task<BaseResponse> SignUpDriver([FromBody] SignUpDriverVM model)
         {
-            return constructResponse(await _businessWrapper.UserBL.SignUpDriver(model,model.AreaIds));
+            return constructResponse(await _businessWrapper.UserBL.SignUpDriver(model));
         }
 
 
@@ -43,23 +43,22 @@ namespace API.Controllers
         }
 
 
-        [HttpPost]
+        [HttpDelete]
         [Route("DeleteVendor")]
-        public async Task<BaseResponse> DeleteVendor([FromBody] string Id)
+        public async Task<BaseResponse> DeleteVendor(string Id)
         {
             return constructResponse(await _businessWrapper.UserBL.DeleteVendor(Id));
         }
 
-        [HttpPost]
+        [HttpDelete]
         [Route("DeleteDriver")]
-        public async Task<BaseResponse> DeleteDriver([FromBody] string  Id)
+        public async Task<BaseResponse> DeleteDriver(string  Id)
         {
             return constructResponse(await _businessWrapper.UserBL.DeleteDriver(Id));
         }
-
-        [HttpPost]
+        [HttpDelete]
         [Route("DeleteUser")]
-        public async Task<BaseResponse> DeleteUser([FromBody] string Id)
+        public async Task<BaseResponse> DeleteUser( string Id)
         {
             return constructResponse(await _businessWrapper.UserBL.DeleteUser(Id));
         }
@@ -157,11 +156,11 @@ namespace API.Controllers
         }
 
         // Add Vendor location
-        [HttpPost]
+        [HttpPut]
         [Route("EditVendor")]
         public async Task<BaseResponse> EditVendor(EditVendorVM model)
         {
-            return constructResponse(_businessWrapper.UserBL.EditVendor(model, model.SubmitterPicture));
+            return constructResponse(await _businessWrapper.UserBL.EditVendor(model, model.SubmitterPicture));
         }
 
 
@@ -170,15 +169,15 @@ namespace API.Controllers
         [Route("EditDriver")]
         public async Task<BaseResponse> EditDriver(string UserId)
         {
-            return constructResponse(_businessWrapper.UserBL.EditDriver(UserId));
+            return constructResponse( _businessWrapper.UserBL.EditDriver(UserId));
         }
 
         // Add Vendor location
-        [HttpPost]
+        [HttpPut]
         [Route("EditDriver")]
         public async Task<BaseResponse> EditDriver(EditDriverVM model)
         {
-            return constructResponse(_businessWrapper.UserBL.EditDriver(model));
+            return constructResponse( _businessWrapper.UserBL.EditDriver(model));
         }
 
 
@@ -191,12 +190,46 @@ namespace API.Controllers
         }
 
         // Add Vendor location
-        [HttpPost]
+        [HttpPut]
         [Route("EditUser")]
         public async Task<BaseResponse> EditUser(EditUserVM model)
         {
             return constructResponse(_businessWrapper.UserBL.EditUser(model));
         }
+
+        // Add Vendor location
+        [HttpGet]
+        [Route("GetExternalLogin")]
+        public async Task<BaseResponse> GetExternalLogin(EditUserVM model)
+        {
+            return constructResponse(_businessWrapper.UserBL.EditUser(model));
+        }
+        [HttpGet]
+        [Route("UserProfile")]
+        public async Task<BaseResponse> UserProfile(string UserId)
+        {
+            return constructResponse(_businessWrapper.UserBL.UserProfile(UserId));
+        }
+
+        [HttpPost]
+        [Route("UserProfile")]
+        public async Task<BaseResponse> UserProfile(UserProfilesVM model)
+        {
+            return constructResponse(_businessWrapper.UserBL.UpdateProfile(model));
+        }
+        [HttpPost]
+        [Route("RegisterExternalLogin")]
+        public async Task<BaseResponse> RegisterExternalLogin(EditUserVM model)
+        {
+            return constructResponse(_businessWrapper.UserBL.EditUser(model));
+        }
+        [HttpPost]
+        [Route("ExternalLogin")]
+        public async Task<BaseResponse> ExternalLogin(EditUserVM model)
+        {
+            return constructResponse(_businessWrapper.UserBL.EditUser(model));
+        }
+
 
     }
 }

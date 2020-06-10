@@ -418,9 +418,41 @@ namespace CommonLayer
         #region Response View Model
         public class ResponseVM
         {
-            public string Message  { get; set; }
+            public string Message { get; set; }
             public bool IsSuccessfull { get; set; }
             public string MessageType { get; set; }
+        }
+        #endregion
+
+
+        #region User Profile 
+        public class UserProfileVM
+        {
+            public string Id { get; set; }
+            public string FirstName { get; set; }
+            public string StoreName { get; set; }
+            public string ProfilePic { get; set; }
+            public string LastName { get; set; }
+            public string Email { get; set; }
+            public string NewPassword { get; set; }
+            public string CarPic { get; set; }
+            public string ConfirmPassword { get; set; }
+            public string PhoneNumber { get; set; }
+            public string Password { get; set; }
+        }
+        public class UserProfilesVM
+        {
+            public string Id { get; set; }
+            public string FirstName { get; set; }
+            public string StoreName { get; set; }
+            public IFormFile ProfilePic { get; set; }
+            public string LastName { get; set; }
+            public string Email { get; set; }
+            public string NewPassword { get; set; }
+            public IFormFile CarPic { get; set; }
+            public string ConfirmPassword { get; set; }
+            public string PhoneNumber { get; set; }
+            public string Password { get; set; }
         }
         #endregion
     }

@@ -43,9 +43,9 @@ namespace API.Controllers
 
         // DELETE: api/City/5
         [HttpDelete("{id}")]
-        public BaseResponse Delete(int id)
+        public async Task<BaseResponse> Delete(int id)
         {
-            return constructResponse(_businessBase.Delete(id));
+            return constructResponse(await _businessBase.Delete(id));
         }
     }
 }

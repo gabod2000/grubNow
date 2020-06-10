@@ -1,5 +1,4 @@
-﻿using CommonLayer;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Models;
 using System;
 using System.Collections.Generic;
@@ -50,7 +49,47 @@ namespace BusinessLayer
         }
 
 
+        public async Task<int> Post(CuisineDTO model)
+        {
+            int result = 0;
+            if (model != null)
+            {
+                Cuisine cusine = new Cuisine();
+                cusine.Name = model.Name;
+                result = await _BusinessBase.Post(cusine);
+            }
+            return result;
+        }
 
+        public async Task<int> Put(CuisineDTO model)
+        {
+            int result = 0;
+            if (model != null)
+            {
+                var cusine = _BusinessBase.GetById(model.Id);
+                if (cusine != null)
+                {
+                    cusine.Name = model.Name;
+                    result = await _BusinessBase.Put(model.Id, cusine);
+                }
+            }
+            return result;
+        }
+
+
+        public async Task<int> Delete(int Id)
+        {
+            int result = 0;
+            if (Id != null)
+            {
+                var area = _BusinessBase.GetById(Id);
+                if (area != null)
+                {
+                    result = await _BusinessBase.Delete(Id);
+                }
+            }
+            return result;
+        }
 
 
     }

@@ -124,6 +124,23 @@ namespace API
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
             services.AddMemoryCache();
 
+            //
+            services.AddAuthentication()
+            .AddGoogle(options =>
+            {
+                IConfigurationSection googleAuthNSection =
+                    Configuration.GetSection("Authentication:Google");
+
+                options.ClientId = googleAuthNSection["ClientId"];
+                options.ClientSecret = googleAuthNSection["ClientSecret"];
+            })
+            .AddFacebook(microsoftOptions =>
+            {
+                microsoftOptions.AppId = Configuration["Authentication:Facebook:AppId"];
+                microsoftOptions.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+            });
+
+
             //Data Seeder Service middleware
             //DataSeeder.serviceProvider = services.BuildServiceProvider();
 

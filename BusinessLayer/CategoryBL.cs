@@ -40,7 +40,7 @@ namespace BusinessLayer
         public async Task<CategoryDTO> GetById(int Id)
         {
             CategoryDTO category = new CategoryDTO();
-            var programs = .GetById(Id);
+            var programs = _BusinessBase.GetById(Id);
             if (programs != null)
             {
                 category.Id = programs.Id;
@@ -49,9 +49,19 @@ namespace BusinessLayer
             return category;
         }
 
-
-
-
+        public async Task<int> Delete(int Id)
+        {
+            int result = 0;
+            if (Id != null)
+            {
+                var area = _BusinessBase.GetById(Id);
+                if (area != null)
+                {
+                    result = await _BusinessBase.Delete(Id);
+                }
+            }
+            return result;
+        }
 
     }
 }

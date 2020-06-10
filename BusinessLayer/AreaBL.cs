@@ -41,16 +41,58 @@ namespace BusinessLayer
             return Arealst;
         }
 
-        public async Task<StateDTO> GetById(int Id)
+        public async Task<AreaDTO> GetById(int Id)
         {
             var states = _BusinessBase.GetById(Id);
-            StateDTO state = new StateDTO();
+            AreaDTO state = new AreaDTO();
             if (states != null)
             {
-                state.Name = states.AreaName;
+                state.AreaName = states.AreaName;
                 state.Id = states.Id;
             }
             return state;
+        }
+
+        public async Task<int> Post(AreaDTO model)
+        {
+            int result = 0;
+            if (model!=null)
+            {
+                Area area = new Area();
+                area.AreaName = model.AreaName;
+                 result=await _BusinessBase.Post(area);
+            }
+            return result;
+        }
+
+        public async Task<int> Put(AreaDTO model)
+        {
+            int result = 0;
+            if (model != null)
+            {
+                var area = _BusinessBase.GetById(model.Id);
+                if (area != null)
+                {
+                    area.AreaName = model.AreaName;
+                    result = await _BusinessBase.Put(model.Id, area);
+                }
+            }
+            return result;
+        }
+
+
+        public async Task<int> Delete(int Id)
+        {
+            int result = 0;
+            if (Id != null)
+            {
+                var area = _BusinessBase.GetById(Id);
+                if (area != null)
+                {
+                    result = await _BusinessBase.Delete(Id);
+                }
+            }
+            return result;
         }
 
     }

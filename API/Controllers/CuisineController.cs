@@ -3,6 +3,7 @@ using CommonLayer;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 using System.Threading.Tasks;
+using static CommonLayer.DTO;
 
 namespace API.Controllers
 {
@@ -31,23 +32,23 @@ namespace API.Controllers
 
         // POST: api/License
         [HttpPost]
-        public async Task<BaseResponse> Post([FromBody] Cuisine model)
+        public async Task<BaseResponse> Post([FromBody] CuisineDTO model)
         {
-            return constructResponse(await _businessBase.Post(model));
+            return constructResponse(await _businessWrapper.CusinieBL.Post(model));
         }
 
         // PUT: api/License/5
         [HttpPut("{id}")]
-        public async Task<BaseResponse> Put(int id, [FromBody] Cuisine model)
+        public async Task<BaseResponse> Put(int id, [FromBody] CuisineDTO model)
         {
-            return constructResponse(await _businessBase.Put(id, model));
+            return constructResponse(await _businessWrapper.CusinieBL.Put(model));
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public BaseResponse Delete(int id)
+        public async Task<BaseResponse> Delete(int id)
         {
-            return constructResponse(_businessBase.Delete(id));
+            return constructResponse(await _businessWrapper.CusinieBL.Delete(id));
         }
     }
 }

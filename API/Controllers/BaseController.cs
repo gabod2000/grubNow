@@ -7,7 +7,8 @@ using static CommonLayer.Helper.Utils;
 namespace API.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize]
+    //[Authorize]
+    [AllowAnonymous]
     public class BaseController : ControllerBase
     {
         protected BusinessWrapper _businessWrapper;

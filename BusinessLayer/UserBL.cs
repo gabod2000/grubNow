@@ -276,14 +276,14 @@ namespace BusinessLayer
 
 
         #region VendorSignUp
-        public async Task<string> SignUpVendor(SignUpVendorVM model, string AreaIDs, string CusineIds, IFormFile upload)
+        public async Task<string> SignUpVendor(SignUpVendorVM model,IFormFile upload)
         {
             bool Status = false;
             string Message = string.Empty;
             //List Of AreaIds
-            List<string> ListOfArea = JsonConvert.DeserializeObject<List<string>>(AreaIDs);
+            List<string> ListOfArea = JsonConvert.DeserializeObject<List<string>>(model.AreaIds);
             //List Of CusineIds
-            List<string> ListOfCusineIds = JsonConvert.DeserializeObject<List<string>>(CusineIds);
+            List<string> ListOfCusineIds = JsonConvert.DeserializeObject<List<string>>(model.CuisineIds);
 
             #region Check User Exist 
 
@@ -329,7 +329,7 @@ namespace BusinessLayer
 
                 var datetime = DateTime.Now;
                 UniqueFileName = datetime.Month + datetime.Day + datetime.Hour + datetime.Minute + datetime.Ticks + "-" + upload.FileName;
-                var path = Directory.GetCurrentDirectory() + "/wwwroot/Uploads/";
+                var path = Directory.GetCurrentDirectory() + "/Uploads/";
                 var filemodel = System.IO.Path.Combine(path, UniqueFileName);
                 //Store file in Directory Folder 
                 using (var stream1 = new FileStream(filemodel, FileMode.Create))
@@ -575,13 +575,13 @@ namespace BusinessLayer
         #endregion
 
         #region SignUpDriver
-        public async Task<string> SignUpDriver(SignUpDriverVM model, string AreaIDs)
+        public async Task<string> SignUpDriver(SignUpDriverVM model)
         {
             bool Status = false;
             string Message = string.Empty;
 
             //List Of AreaIds
-            List<string> ListOfArea = JsonConvert.DeserializeObject<List<string>>(AreaIDs);
+            List<string> ListOfArea = JsonConvert.DeserializeObject<List<string>>(model.AreaIds);
 
             // User Name Already Exsit
             var userName = _userManager.FindByNameAsync(model.Email).Result;
@@ -1284,7 +1284,7 @@ namespace BusinessLayer
 
                             var datetime = DateTime.Now;
                             UniqueFileName = datetime.Month + datetime.Day + datetime.Hour + datetime.Minute + datetime.Ticks + "-" + upload.FileName;
-                            var path = Directory.GetCurrentDirectory() + "/wwwroot/Uploads/";
+                            var path = Directory.GetCurrentDirectory() + "/Uploads/";
                             var filemodel = System.IO.Path.Combine(path, UniqueFileName);
                             //Store file in Directory Folder 
                             using (var stream1 = new FileStream(filemodel, FileMode.Create))
@@ -1530,6 +1530,89 @@ namespace BusinessLayer
             }
             return otherLocaction;
         }
+        #endregion
+
+
+        #region UserProfile
+
+        public UserProfileVM UserProfile(string UserId)
+        {
+            UserProfileVM userProfileVM = new UserProfileVM();
+            if (UserId != null)
+            {
+                var result = _userManager.FindByIdAsync(UserId).Result;
+                if (result != null)
+                {
+                    userProfileVM.CarPic = result.DriverCar;
+                    userProfileVM.Email = result.Email;
+                    userProfileVM.FirstName = result.FirstName;
+                    userProfileVM.LastName = result.LastName;
+                    userProfileVM.PhoneNumber = result.PhoneNumber;
+                    userProfileVM.ProfilePic = result.ProfilePic;
+                }
+            }
+            return userProfileVM;
+        }
+
+
+        public async Task<string> UpdateProfile(UserProfilesVM model)
+        {
+            bool Status = false;
+            string Message = string.Empty;
+            var user = _userManager.FindByIdAsync(model.Id).Result;
+            if (user != null)
+            {
+                string fileName = string.Empty;
+                string CarfileName = string.Empty;
+                if (model.ProfilePic!=null)
+                {
+                    string rootPath = Directory.GetCurrentDirectory() + "/Uploads";
+                    fileName = System.IO.Path.Combine(rootPath, model.ProfilePic.FileName);
+                    //Store file in Directory Folder 
+                    using (var stream = new FileStream(fileName, FileMode.Create))
+                        model.ProfilePic.CopyTo(stream);
+                }
+
+                if (model.CarPic != null)
+                {
+                    string rootPath = Directory.GetCurrentDirectory() + "/Uploads";
+                    CarfileName = System.IO.Path.Combine(rootPath, model.CarPic.FileName);
+                    //Store file in Directory Folder 
+                    using (var stream = new FileStream(CarfileName, FileMode.Create))
+                        model.ProfilePic.CopyTo(stream);
+                }
+
+                user.FirstName = model.FirstName;
+                user.LastName = model.LastName;
+                user.PhoneNumber = model.PhoneNumber;
+                user.Email = model.Email;
+                user.UserName = model.Email;
+                user.ProfilePic = fileName;
+                user.DriverCar = CarfileName;
+                var result1 = _userManager.UpdateAsync(user).Result;
+                if (result1.Succeeded)
+                {
+                    Status = true;
+                    Message = "Record Update successfully";
+                    OtherConstants.messageType = MessageType.Success;
+                    OtherConstants.isSuccessful = Status;
+                    OtherConstants.responseMsg = Message;
+                    return null;
+                }
+                else
+                {
+                    Status = false;
+                    Message = "Error While Updating record";
+                    OtherConstants.messageType = MessageType.Success;
+                    OtherConstants.isSuccessful = Status;
+                    OtherConstants.responseMsg = Message;
+                    return null;
+                }
+            }
+            return null;
+        }
+
+
         #endregion
     }
 }
